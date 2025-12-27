@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Categories on Ngọc Trinh - Blog Lập Trình Mạng</title>
+    <link>http://localhost:1313/categories/</link>
+    <description>Recent content in Categories on Ngọc Trinh - Blog Lập Trình Mạng</description>
+    <generator>Hugo -- 0.153.0</generator>
+    <language>vi</language>
+    <lastBuildDate>Mon, 29 Dec 2025 08:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Tổng Kết</title>
+      <link>http://localhost:1313/categories/t%E1%BB%95ng-k%E1%BA%BFt/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/categories/t%E1%BB%95ng-k%E1%BA%BFt/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Cơ Chế Hoạt Động</title>
+      <link>http://localhost:1313/categories/c%C6%A1-ch%E1%BA%BF-ho%E1%BA%A1t-%C4%91%E1%BB%99ng/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/categories/c%C6%A1-ch%E1%BA%BF-ho%E1%BA%A1t-%C4%91%E1%BB%99ng/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Lập Trình JavaScript</title>
+      <link>http://localhost:1313/categories/l%E1%BA%ADp-tr%C3%ACnh-javascript/</link>
+      <pubDate>Sat, 27 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/categories/l%E1%BA%ADp-tr%C3%ACnh-javascript/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tư Duy Lập Trình</title>
+      <link>http://localhost:1313/categories/t%C6%B0-duy-l%E1%BA%ADp-tr%C3%ACnh/</link>
+      <pubDate>Fri, 26 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/categories/t%C6%B0-duy-l%E1%BA%ADp-tr%C3%ACnh/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Mạng Máy Tính</title>
+      <link>http://localhost:1313/categories/m%E1%BA%A1ng-m%C3%A1y-t%C3%ADnh/</link>
+      <pubDate>Wed, 24 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/categories/m%E1%BA%A1ng-m%C3%A1y-t%C3%ADnh/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Lập Trình Mạng</title>
+      <link>http://localhost:1313/categories/l%E1%BA%ADp-tr%C3%ACnh-m%E1%BA%A1ng/</link>
+      <pubDate>Tue, 23 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/categories/l%E1%BA%ADp-tr%C3%ACnh-m%E1%BA%A1ng/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Backend</title>
+      <link>http://localhost:1313/categories/backend/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/categories/backend/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Practice</title>
+      <link>http://localhost:1313/categories/practice/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/categories/practice/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

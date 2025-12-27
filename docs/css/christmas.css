@@ -1,0 +1,89 @@
+/* =========================================================
+   CHRISTMAS MODE – PAPERMOD (LAYER FIX CUỐI)
+   ========================================================= */
+
+/* ---------- RESET NỀN GỐC ---------- */
+html,
+body,
+.main {
+  background: transparent !important;
+}
+
+/* ---------- MASTER SWITCH ---------- */
+#christmas-snow {
+  display: none;
+}
+:root.christmas #christmas-snow {
+  display: block;
+}
+:root.christmas #particle-bg {
+  display: none !important;
+}
+
+/* ---------- TUYẾT RƠI (CANVAS) ---------- */
+#christmas-snow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---------- TUYẾT VIỀN TRÊN ---------- */
+:root.christmas::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+
+  background: url("/images/snow-top.png") repeat-x top;
+  background-size: auto 80px;
+
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.95;
+}
+
+/* ---------- TUYẾT ĐỌNG PHÍA DƯỚI ---------- */
+:root.christmas::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  height: 220px;
+
+  background: url("/images/snow-under.png")
+    repeat-x bottom;
+  background-size: auto 220px;
+
+  pointer-events: none;
+  z-index: 2; /* DƯỚI CÂY */
+}
+
+/* ---------- CÂY THÔNG GÓC DƯỚI PHẢI ---------- */
+:root.christmas .christmas-tree {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+
+  width: 340px;
+  height: 280px;
+
+  background: url("/images/christmas-trees.png")
+    no-repeat bottom right;
+  background-size: contain;
+
+  pointer-events: none;
+  z-index: 3; /* TRÊN TUYẾT ĐỌNG */
+}
+
+/* ---------- CONTENT LUÔN Ở TRÊN ---------- */
+header,
+.main,
+footer {
+  position: relative;
+  z-index: 4;
+}

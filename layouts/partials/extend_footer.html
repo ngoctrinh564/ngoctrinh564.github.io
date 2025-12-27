@@ -1,0 +1,81 @@
+<!-- ================= Particle background ================= -->
+<script src="{{ "js/particle-bg.js" | relURL }}"></script>
+
+<!-- ================= Christmas tree (fixed layer) ================= -->
+<div class="christmas-tree"></div>
+
+<!-- ================= Christmas snow canvas ================= -->
+<script src="{{ "js/christmas-bg.js" | relURL }}" defer></script>
+
+<!-- ================= Christmas toggle button ================= -->
+<script>
+(function () {
+  function mountChristmasToggle() {
+    const themeBtn = document.getElementById("theme-toggle");
+    if (!themeBtn) return;
+
+    /* tránh gắn trùng */
+    if (document.getElementById("christmas-toggle")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "christmas-toggle";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "Christmas mode");
+    btn.title = "Christmas mode";
+
+    /* SVG line icon – đồng bộ style nút dark */
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="18" height="18"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           aria-hidden="true">
+        <path d="M12 2 8.5 8h7L12 2Z"/>
+        <path d="M12 6 6 14h12L12 6Z"/>
+        <path d="M12 10 4 20h16L12 10Z"/>
+        <path d="M12 20v2"/>
+      </svg>
+    `;
+
+    /* ===== STYLE: copy hành vi nút dark/light ===== */
+    btn.className = themeBtn.className;     // dùng chung class PaperMod
+    btn.style.marginLeft = "6px";
+    btn.style.padding = "0";
+    btn.style.background = "transparent";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.display = "inline-flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+    btn.style.color = "inherit";             // SVG theo màu chữ
+
+    /* gắn NGAY SAU nút dark */
+    themeBtn.insertAdjacentElement("afterend", btn);
+
+    /* restore trạng thái */
+    if (localStorage.getItem("christmas") === "true") {
+      document.documentElement.classList.add("christmas");
+    }
+
+    /* toggle */
+    btn.addEventListener("click", () => {
+      const enabled = document.documentElement.classList.toggle("christmas");
+      localStorage.setItem("christmas", enabled ? "true" : "false");
+    });
+  }
+
+  /* PaperMod render header muộn → observer */
+  const obs = new MutationObserver(() => {
+    if (document.getElementById("theme-toggle")) {
+      mountChristmasToggle();
+      obs.disconnect();
+    }
+  });
+
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>

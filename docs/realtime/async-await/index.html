@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Bài 7: Callback → Promise → Async/Await: Tiến hóa để xử lý dòng dữ liệu Real-Time | Ngọc Trinh - Blog Lập Trình Mạng</title>
+<meta name="keywords" content="JavaScript, ES6, Async/Await, Promise">
+<meta name="description" content="Hành trình lột xác của JavaScript: Từ cơn ác mộng &lsquo;Callback Hell&rsquo; đến sự thanh lịch của &lsquo;Async/Await&rsquo;. Làm chủ luồng dữ liệu là chìa khóa của ứng dụng Real-Time.">
+<meta name="author" content="Ngọc Trinh">
+<link rel="canonical" href="http://localhost:1313/realtime/async-await/">
+<link crossorigin="anonymous" href="http://localhost:1313/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css" integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/realtime/async-await/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><link rel="stylesheet" href="http://localhost:1313/css/blog-layout.css">
+<link rel="stylesheet" href="http://localhost:1313/css/custom.css">
+<link rel="stylesheet" href="http://localhost:1313/css/christmas.css">
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Ngọc Trinh - Blog Lập Trình Mạng (Alt + H)">Ngọc Trinh - Blog Lập Trình Mạng</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blog/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/topics/" title="Topics">
+                    <span>Topics</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/roadmaps/" title="Roadmaps">
+                    <span>Roadmaps</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/contact/" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+
+
+
+  
+  
+
+  <aside style="
+    position:fixed;
+    right:28px;
+    top:120px;
+    width:320px;
+    z-index:60;
+    pointer-events:none;
+  ">
+    <div class="toc-card" style="
+      pointer-events:auto;
+      background:var(--entry);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:1.4rem 1.4rem 1.2rem;
+      box-shadow:0 18px 48px rgba(0,0,0,0.10);
+      font-size:0.86rem;
+      line-height:1.6;
+    ">
+
+      
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        font-weight:600;
+        font-size:0.9rem;
+        margin-bottom:12px;
+        padding-bottom:10px;
+        border-bottom:1px solid var(--border);
+      ">
+        <span>📑 Mục lục</span>
+
+        <button
+          aria-label="Toggle TOC"
+          onclick="
+            var toc = this.closest('.toc-card').querySelector('.toc-body');
+            if (toc.style.display === 'none') {
+              toc.style.display = '';
+              this.textContent = '−';
+            } else {
+              toc.style.display = 'none';
+              this.textContent = '+';
+            }
+          "
+          style="
+            background:none;
+            border:none;
+            cursor:pointer;
+            font-size:1.1rem;
+            font-weight:600;
+            color:var(--secondary);
+          "
+        >−</button>
+      </div>
+
+      
+      <div class="toc-body" style="max-height:calc(100vh - 260px); overflow-y:auto;">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-thời-kỳ-sơ-khai--callback-và-callback-hell">1. Thời kỳ sơ khai – Callback và “Callback Hell”</a></li>
+    <li><a href="#2-thời-kỳ-quá-độ--promise-es6--2015">2. Thời kỳ quá độ – Promise (ES6 – 2015)</a></li>
+    <li><a href="#3-kỷ-nguyên-hiện-đại--asyncawait-es2017">3. Kỷ nguyên hiện đại – Async/Await (ES2017)</a></li>
+    <li><a href="#4-vì-sao-asyncawait-là-chuẩn-mực-cho-real-time">4. Vì sao Async/Await là chuẩn mực cho Real-Time?</a></li>
+    <li><a href="#tạm-kết">Tạm kết</a></li>
+  </ul>
+</nav>
+      </div>
+
+    </div>
+  </aside>
+
+  <style>
+    #TableOfContents { font-size:0.86rem; }
+    #TableOfContents ul { list-style:none; margin:0; padding:0; }
+    #TableOfContents li { margin:6px 0; }
+
+    #TableOfContents a{
+      display:block;
+      padding:4px 8px;
+      border-radius:6px;
+      text-decoration:none;
+      color:var(--secondary);
+      transition:background .15s,color .15s;
+    }
+    #TableOfContents a:hover{
+      background:rgba(0,0,0,.04);
+      color:var(--primary);
+    }
+
+    #TableOfContents ul ul{
+      margin-top:4px;
+      padding-left:16px;
+      border-left:1px solid var(--border);
+    }
+    #TableOfContents ul ul a{ font-size:.84rem; padding-left:12px; }
+    #TableOfContents ul ul ul a{ font-size:.82rem; }
+  </style>
+
+  
+
+  
+  
+
+
+
+
+<main class="main">
+  <div class="container">
+    <article class="post-single">
+
+      
+      <header class="post-header">
+        
+
+        <h1 class="post-title">
+          Bài 7: Callback → Promise → Async/Await: Tiến hóa để xử lý dòng dữ liệu Real-Time
+        </h1>
+        <div class="post-meta">
+          <span title='2025-12-27 08:00:00 +0700 +07'>December 27, 2025</span>&nbsp;·&nbsp;<span>3 phút</span>&nbsp;·&nbsp;<span>Ngọc Trinh</span>
+          
+          
+
+          
+
+        </div>
+      </header>
+
+      
+       
+
+      
+      <div class="post-content">
+          <p>Ở <strong>Bài 6</strong>, chúng ta đã thấy kiến trúc <strong>Event-Driven</strong> giúp JavaScript xử lý Real-Time hiệu quả bằng cơ chế <strong>Non-blocking</strong>.<br>
+Tuy nhiên, khi hệ thống lớn dần lên, một vấn đề nghiêm trọng xuất hiện:</p>
+<blockquote>
+<p><strong>Làm sao kiểm soát thứ tự thực hiện khi mọi thứ đều bất đồng bộ?</strong></p>
+</blockquote>
+<p>Trong ứng dụng Real-Time, dữ liệu không đến theo một luồng đơn giản.<br>
+Ta thường phải xử lý chuỗi tác vụ <strong>phụ thuộc</strong>:</p>
+<ul>
+<li>Đăng nhập</li>
+<li>Lấy quyền người dùng</li>
+<li>Ghi log</li>
+<li>Phát thông báo</li>
+</ul>
+<p>Nếu không có công cụ phù hợp, code sẽ nhanh chóng trở thành hỗn loạn.</p>
+<hr>
+<h2 id="1-thời-kỳ-sơ-khai--callback-và-callback-hell">1. Thời kỳ sơ khai – Callback và “Callback Hell”<a hidden class="anchor" aria-hidden="true" href="#1-thời-kỳ-sơ-khai--callback-và-callback-hell">#</a></h2>
+<p>Ngày xưa, cách phổ biến nhất để xử lý bất đồng bộ là dùng <strong>Callback (Hàm gọi lại)</strong>.</p>
+<p>Nguyên lý cốt lõi:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Hàm A chạy xong → gọi hàm B
+</span></span></code></pre></div><p>Vấn đề xuất hiện khi các tác vụ <strong>phụ thuộc chuỗi</strong>.</p>
+<p>Ví dụ quy trình đăng nhập:</p>
+<ol>
+<li>Kiểm tra tài khoản</li>
+<li>Lấy quyền người dùng</li>
+<li>Ghi log truy cập</li>
+</ol>
+<p>Code thực tế rất nhanh biến thành cấu trúc lồng nhau:</p>
+<p><img alt="Callback Hell Code" loading="lazy" src="http://localhost:1313/images/7/callback-hell.png">
+<em>Hình 1: Callback Hell – code thụt vào trong, khó đọc, khó kiểm soát</em></p>
+<p>Nhược điểm:</p>
+<ul>
+<li><strong>Khó đọc</strong>: mắt phải lần theo dấu <code>})</code> để tìm điểm kết thúc.</li>
+<li><strong>Khó bắt lỗi</strong>: mỗi tầng callback phải tự xử lý lỗi, code lặp lại và dễ bỏ sót.</li>
+</ul>
+<hr>
+<h2 id="2-thời-kỳ-quá-độ--promise-es6--2015">2. Thời kỳ quá độ – Promise (ES6 – 2015)<a hidden class="anchor" aria-hidden="true" href="#2-thời-kỳ-quá-độ--promise-es6--2015">#</a></h2>
+<p>ES6 (2015) đưa vào <strong>Promise</strong> để “làm phẳng” luồng xử lý.</p>
+<p>Thay vì <strong>lồng</strong>, ta <strong>nối chuỗi</strong> bằng <code>.then()</code> và gom lỗi về một chỗ bằng <code>.catch()</code>.</p>
+<p>Ví dụ Promise chaining:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">verifyUser</span>()
+</span></span><span style="display:flex;"><span>  .<span style="color:#a6e22e">then</span>((<span style="color:#a6e22e">user</span>) =&gt; <span style="color:#a6e22e">getRoles</span>(<span style="color:#a6e22e">user</span>))
+</span></span><span style="display:flex;"><span>  .<span style="color:#a6e22e">then</span>((<span style="color:#a6e22e">roles</span>) =&gt; <span style="color:#a6e22e">logAccess</span>(<span style="color:#a6e22e">roles</span>))
+</span></span><span style="display:flex;"><span>  .<span style="color:#a6e22e">then</span>(() =&gt; <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Thành công!&#34;</span>))
+</span></span><span style="display:flex;"><span>  .<span style="color:#66d9ef">catch</span>((<span style="color:#a6e22e">error</span>) =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;Lỗi hệ thống:&#34;</span>, <span style="color:#a6e22e">error</span>);
+</span></span><span style="display:flex;"><span>  });
+</span></span></code></pre></div><p>Cải tiến:</p>
+<ul>
+<li>Code <strong>thẳng hơn</strong> so với callback lồng nhau</li>
+<li>Bắt lỗi tập trung tại <code>.catch()</code></li>
+</ul>
+<p>Hạn chế:</p>
+<ul>
+<li>Luồng suy nghĩ vẫn bị chia nhỏ bởi chuỗi <code>.then()</code></li>
+<li>Debug không tự nhiên với người quen đọc code tuyến tính</li>
+</ul>
+<hr>
+<h2 id="3-kỷ-nguyên-hiện-đại--asyncawait-es2017">3. Kỷ nguyên hiện đại – Async/Await (ES2017)<a hidden class="anchor" aria-hidden="true" href="#3-kỷ-nguyên-hiện-đại--asyncawait-es2017">#</a></h2>
+<p>Async/Await ra đời (ES2017) để đưa bất đồng bộ về đúng “cách đọc” của lập trình viên:</p>
+<blockquote>
+<p><strong>Đọc code từ trên xuống dưới như code đồng bộ.</strong></p>
+</blockquote>
+<p>Hãy xem hình so sánh cú pháp:</p>
+<p><img alt="Promise vs Async/Await" loading="lazy" src="http://localhost:1313/images/7/promise-vs-async-code.png">
+<em>Hình 2: Promise (trái) vs Async/Await (phải) – cùng bản chất, khác cách đọc</em></p>
+<p>Ví dụ code với Async/Await:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Kỷ nguyên Async/Await
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">login</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// await: tạm dừng hàm async cho đến khi Promise hoàn thành
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">user</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">verifyUser</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">roles</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">getRoles</span>(<span style="color:#a6e22e">user</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">logAccess</span>(<span style="color:#a6e22e">roles</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Thành công!&#34;</span>);
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Bắt lỗi tập trung bằng try/catch
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#34;Lỗi:&#34;</span>, <span style="color:#a6e22e">error</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="4-vì-sao-asyncawait-là-chuẩn-mực-cho-real-time">4. Vì sao Async/Await là chuẩn mực cho Real-Time?<a hidden class="anchor" aria-hidden="true" href="#4-vì-sao-asyncawait-là-chuẩn-mực-cho-real-time">#</a></h2>
+<ul>
+<li>
+<p><strong>Tường minh</strong><br>
+Code chạy tuyến tính theo thứ tự, giống code đồng bộ.</p>
+</li>
+<li>
+<p><strong>Dễ debug</strong><br>
+Đặt breakpoint ngay tại dòng <code>await</code>, theo dõi biến trực tiếp.</p>
+</li>
+<li>
+<p><strong>Không hề block</strong><br>
+<code>await</code> không khóa Main Thread. Trong lúc chờ I/O (Database, Network), <strong>Event Loop</strong> vẫn xử lý các sự kiện khác.</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Non-blocking được giữ nguyên,
+</span></span><span style="display:flex;"><span>Async/Await chỉ thay đổi cú pháp để dễ đọc và dễ kiểm soát.
+</span></span></code></pre></div><hr>
+<h2 id="tạm-kết">Tạm kết<a hidden class="anchor" aria-hidden="true" href="#tạm-kết">#</a></h2>
+<p>JavaScript đã tiến hóa theo 3 bước:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Callback    → dễ viết ban đầu, nhưng nhanh thành “Callback Hell”
+</span></span><span style="display:flex;"><span>Promise     → làm phẳng luồng xử lý, bắt lỗi tập trung hơn
+</span></span><span style="display:flex;"><span>Async/Await → tuyến tính, dễ đọc, dễ debug, phù hợp Real-Time
+</span></span></code></pre></div><p>Nhưng dù viết theo kiểu nào, vẫn có một “bộ máy” đứng sau điều phối:</p>
+<ul>
+<li>Khi nào callback được gọi?</li>
+<li>Khi nào Promise được resolve?</li>
+<li>Khi nào <code>await</code> xong để chạy tiếp?</li>
+</ul>
+<p>Đó là <strong>Event Loop</strong>.</p>
+
+
+      </div>
+
+      
+      <footer class="post-footer">
+        <ul class="post-tags">
+          <li>
+            <a href="http://localhost:1313/tags/javascript/">JavaScript</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/es6/">ES6</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/async/await/">Async/Await</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/promise/">Promise</a>
+          </li>
+        </ul>
+          
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/realtime/event-driven/">
+    <span class="title">« Trang trước</span>
+    <br>
+    <span>Bài 6: Event-Driven Programming: Lắng nghe thay vì chờ đợi</span>
+  </a>
+  <a class="next" href="http://localhost:1313/realtime/event-loop/">
+    <span class="title">Trang tiếp theo »</span>
+    <br>
+    <span>Bài 8: Event Loop – Trái tim vận hành của JavaScript</span>
+  </a>
+</nav>
+
+      </footer>
+
+      
+
+    </article>
+  </div>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Ngọc Trinh - Blog Lập Trình Mạng</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+<script src="http://localhost:1313/js/particle-bg.js"></script>
+
+
+<div class="christmas-tree"></div>
+
+
+<script src="http://localhost:1313/js/christmas-bg.js" defer></script>
+
+
+<script>
+(function () {
+  function mountChristmasToggle() {
+    const themeBtn = document.getElementById("theme-toggle");
+    if (!themeBtn) return;
+
+     
+    if (document.getElementById("christmas-toggle")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "christmas-toggle";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "Christmas mode");
+    btn.title = "Christmas mode";
+
+     
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="18" height="18"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           aria-hidden="true">
+        <path d="M12 2 8.5 8h7L12 2Z"/>
+        <path d="M12 6 6 14h12L12 6Z"/>
+        <path d="M12 10 4 20h16L12 10Z"/>
+        <path d="M12 20v2"/>
+      </svg>
+    `;
+
+     
+    btn.className = themeBtn.className;     
+    btn.style.marginLeft = "6px";
+    btn.style.padding = "0";
+    btn.style.background = "transparent";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.display = "inline-flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+    btn.style.color = "inherit";             
+
+     
+    themeBtn.insertAdjacentElement("afterend", btn);
+
+     
+    if (localStorage.getItem("christmas") === "true") {
+      document.documentElement.classList.add("christmas");
+    }
+
+     
+    btn.addEventListener("click", () => {
+      const enabled = document.documentElement.classList.toggle("christmas");
+      localStorage.setItem("christmas", enabled ? "true" : "false");
+    });
+  }
+
+   
+  const obs = new MutationObserver(() => {
+    if (document.getElementById("theme-toggle")) {
+      mountChristmasToggle();
+      obs.disconnect();
+    }
+  });
+
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'Sao chép';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'Đã sao chép!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'Sao chép';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

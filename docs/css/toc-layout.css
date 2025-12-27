@@ -1,0 +1,51 @@
+/* FLOAT TOC SIDEBAR */
+.toc-float-sidebar {
+  position: fixed;
+  right: 24px;
+  top: 120px;
+  width: 300px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.toc-float-sidebar .toc-card {
+  pointer-events: auto;
+  background: var(--entry);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.4rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  font-size: 0.9rem;
+}
+
+/* TOC TITLE */
+.toc-title {
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+/* TOC LIST */
+.toc-card ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.toc-card li {
+  margin: 0.4rem 0;
+}
+
+.toc-card a {
+  text-decoration: none;
+  color: var(--secondary);
+}
+
+.toc-card a:hover {
+  color: var(--primary);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+  .toc-float-sidebar {
+    display: none;
+  }
+}

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Bài 1: Real-Time Communications là gì? Vì sao không chỉ là “chat nhanh”? | Ngọc Trinh - Blog Lập Trình Mạng</title>
+<meta name="keywords" content="Networking, Real-Time, Concept">
+<meta name="description" content="Giải mã bản chất của Real-Time: Sự dịch chuyển từ tư duy Kéo (Pull) truyền thống sang tư duy Đẩy (Push) tức thời.">
+<meta name="author" content="Ngọc Trinh">
+<link rel="canonical" href="http://localhost:1313/realtime/rtc-la-gi/">
+<link crossorigin="anonymous" href="http://localhost:1313/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css" integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/realtime/rtc-la-gi/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><link rel="stylesheet" href="http://localhost:1313/css/blog-layout.css">
+<link rel="stylesheet" href="http://localhost:1313/css/custom.css">
+<link rel="stylesheet" href="http://localhost:1313/css/christmas.css">
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Ngọc Trinh - Blog Lập Trình Mạng (Alt + H)">Ngọc Trinh - Blog Lập Trình Mạng</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blog/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/topics/" title="Topics">
+                    <span>Topics</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/roadmaps/" title="Roadmaps">
+                    <span>Roadmaps</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/contact/" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+
+
+
+  
+  
+
+  <aside style="
+    position:fixed;
+    right:28px;
+    top:120px;
+    width:320px;
+    z-index:60;
+    pointer-events:none;
+  ">
+    <div class="toc-card" style="
+      pointer-events:auto;
+      background:var(--entry);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:1.4rem 1.4rem 1.2rem;
+      box-shadow:0 18px 48px rgba(0,0,0,0.10);
+      font-size:0.86rem;
+      line-height:1.6;
+    ">
+
+      
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        font-weight:600;
+        font-size:0.9rem;
+        margin-bottom:12px;
+        padding-bottom:10px;
+        border-bottom:1px solid var(--border);
+      ">
+        <span>📑 Mục lục</span>
+
+        <button
+          aria-label="Toggle TOC"
+          onclick="
+            var toc = this.closest('.toc-card').querySelector('.toc-body');
+            if (toc.style.display === 'none') {
+              toc.style.display = '';
+              this.textContent = '−';
+            } else {
+              toc.style.display = 'none';
+              this.textContent = '+';
+            }
+          "
+          style="
+            background:none;
+            border:none;
+            cursor:pointer;
+            font-size:1.1rem;
+            font-weight:600;
+            color:var(--secondary);
+          "
+        >−</button>
+      </div>
+
+      
+      <div class="toc-body" style="max-height:calc(100vh - 260px); overflow-y:auto;">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-tư-duy-vận-chuyển-kéo-pull-vs-đẩy-push">1. Tư duy vận chuyển: Kéo (Pull) vs Đẩy (Push)</a>
+      <ul>
+        <li><a href="#web-truyền-thống-mô-hình-bên-trái--pull">Web truyền thống (Mô hình bên trái – PULL)</a></li>
+        <li><a href="#real-time-mô-hình-bên-phải--push">Real-Time (Mô hình bên phải – PUSH)</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-mô-hình-kỹ-thuật-thực-tế">2. Mô hình kỹ thuật thực tế</a></li>
+    <li><a href="#3-định-nghĩa-chuẩn-về-real-time-communications-rtc">3. Định nghĩa chuẩn về Real-Time Communications (RTC)</a></li>
+    <li><a href="#4-cái-giá-của-sự-tức-thời-trade-offs">4. Cái giá của sự “tức thời” (Trade-offs)</a></li>
+    <li><a href="#tạm-kết">Tạm kết</a></li>
+  </ul>
+</nav>
+      </div>
+
+    </div>
+  </aside>
+
+  <style>
+    #TableOfContents { font-size:0.86rem; }
+    #TableOfContents ul { list-style:none; margin:0; padding:0; }
+    #TableOfContents li { margin:6px 0; }
+
+    #TableOfContents a{
+      display:block;
+      padding:4px 8px;
+      border-radius:6px;
+      text-decoration:none;
+      color:var(--secondary);
+      transition:background .15s,color .15s;
+    }
+    #TableOfContents a:hover{
+      background:rgba(0,0,0,.04);
+      color:var(--primary);
+    }
+
+    #TableOfContents ul ul{
+      margin-top:4px;
+      padding-left:16px;
+      border-left:1px solid var(--border);
+    }
+    #TableOfContents ul ul a{ font-size:.84rem; padding-left:12px; }
+    #TableOfContents ul ul ul a{ font-size:.82rem; }
+  </style>
+
+  
+
+  
+  
+
+
+
+
+<main class="main">
+  <div class="container">
+    <article class="post-single">
+
+      
+      <header class="post-header">
+        
+
+        <h1 class="post-title">
+          Bài 1: Real-Time Communications là gì? Vì sao không chỉ là “chat nhanh”?
+        </h1>
+        <div class="post-meta">
+          <span title='2025-12-21 08:00:00 +0700 +07'>December 21, 2025</span>&nbsp;·&nbsp;<span>4 phút</span>&nbsp;·&nbsp;<span>Ngọc Trinh</span>
+          
+          
+
+          
+
+        </div>
+      </header>
+
+      
+       
+
+      
+      <div class="post-content">
+          <p>Trong kỷ nguyên số, chúng ta thường nghe nói về ứng dụng Real-Time (Thời gian thực) như Chat, Game Online hay Chứng khoán. Nhưng dưới “nắp ca-pô”, sự khác biệt giữa một trang Web truyền thống và một ứng dụng Real-Time thực sự nằm ở đâu?</p>
+<p>Nó không nằm ở tốc độ mạng, mà nằm ở <strong>cơ chế vận chuyển dữ liệu</strong>.</p>
+<hr>
+<h2 id="1-tư-duy-vận-chuyển-kéo-pull-vs-đẩy-push">1. Tư duy vận chuyển: Kéo (Pull) vs Đẩy (Push)<a hidden class="anchor" aria-hidden="true" href="#1-tư-duy-vận-chuyển-kéo-pull-vs-đẩy-push">#</a></h2>
+<p>Hãy bắt đầu bằng một ví dụ trực quan để so sánh hai tư duy này:</p>
+<p><img alt="So sánh Web Pull và Push" loading="lazy" src="http://localhost:1313/images/1/pull-vs-push.jpg">
+<em>Hình 1: Sự khác biệt giữa Web truyền thống và Web Real-Time</em></p>
+<h3 id="web-truyền-thống-mô-hình-bên-trái--pull">Web truyền thống (Mô hình bên trái – PULL)<a hidden class="anchor" aria-hidden="true" href="#web-truyền-thống-mô-hình-bên-trái--pull">#</a></h3>
+<p>Hãy tưởng tượng Client (trình duyệt) giống như một anh chàng shipper cần cù nhưng… thụ động.</p>
+<ul>
+<li><strong>Hành động:</strong> Anh shipper phải liên tục chạy đến kho hàng (Server), gõ cửa và hỏi: <em>“Có hàng mới cho tôi không?”</em></li>
+<li><strong>Kết quả:</strong> Nếu Server trả lời “Không”, anh ta tốn công chạy đi chạy lại vô ích. Nếu có hàng, anh ta mới mang về.</li>
+<li><strong>Độ trễ (Latency):</strong> Thời gian chạy đi chạy lại chính là độ trễ. Dù chạy nhanh đến mấy, độ trễ vẫn luôn tồn tại.</li>
+<li><strong>Thuật ngữ chuyên ngành:</strong> Cách làm này gọi là <strong>Polling</strong> (thăm dò).</li>
+</ul>
+<h3 id="real-time-mô-hình-bên-phải--push">Real-Time (Mô hình bên phải – PUSH)<a hidden class="anchor" aria-hidden="true" href="#real-time-mô-hình-bên-phải--push">#</a></h3>
+<p>Đây là cách Real-Time Communications vận hành. Thay vì anh shipper, ta có một <strong>đường ống vận chuyển trực tiếp</strong>.</p>
+<ul>
+<li><strong>Hành động:</strong> Client chỉ cần ngồi chờ. Ngay khi Server có hàng, Server sẽ <strong>chủ động đẩy (Push)</strong> dữ liệu đi.</li>
+<li><strong>Kết quả:</strong> Client nhận dữ liệu gần như ngay lập tức.</li>
+<li><strong>Thuật ngữ chuyên ngành:</strong> Cơ chế này được hiện thực bằng <strong>WebSocket</strong> hoặc các kết nối thời gian thực tương tự.</li>
+</ul>
+<hr>
+<h2 id="2-mô-hình-kỹ-thuật-thực-tế">2. Mô hình kỹ thuật thực tế<a hidden class="anchor" aria-hidden="true" href="#2-mô-hình-kỹ-thuật-thực-tế">#</a></h2>
+<p>Từ hình ảnh ẩn dụ trên, ta chuyển sang góc nhìn kỹ thuật của lập trình viên mạng. Dưới đây là cách mô hình <strong>PUSH</strong> hoạt động trong thực tế:</p>
+<p><img alt="Mô hình Push Server" loading="lazy" src="http://localhost:1313/images/1/push-model.jpg">
+<em>Hình 2: Server chủ động phân phối dữ liệu xuống đa nền tảng</em></p>
+<p>Trong mô hình này, có một sự thay đổi quyền lực rõ rệt:</p>
+<ol>
+<li>
+<p><strong>Server nắm quyền chủ động</strong><br>
+Server không còn là kho hàng thụ động chờ request. Nó trở thành trung tâm điều phối sự kiện.</p>
+</li>
+<li>
+<p><strong>Đa nền tảng đồng bộ</strong><br>
+Khi có sự kiện (ví dụ: tin nhắn mới), Server đẩy dữ liệu <strong>đồng thời</strong> xuống tất cả thiết bị đang kết nối (Laptop, Điện thoại, Tablet).</p>
+</li>
+<li>
+<p><strong>Loại bỏ câu hỏi thừa</strong><br>
+Client không cần hỏi <em>“Có tin mới không?”</em>. Điều này giúp tiết kiệm băng thông và tài nguyên xử lý đáng kể.</p>
+</li>
+</ol>
+<hr>
+<h2 id="3-định-nghĩa-chuẩn-về-real-time-communications-rtc">3. Định nghĩa chuẩn về Real-Time Communications (RTC)<a hidden class="anchor" aria-hidden="true" href="#3-định-nghĩa-chuẩn-về-real-time-communications-rtc">#</a></h2>
+<p>Kết hợp cả hai góc nhìn, ta có định nghĩa chính xác:</p>
+<blockquote>
+<p><strong>Real-Time Communications (RTC)</strong> là phương thức giao tiếp thiết lập <strong>kết nối hai chiều liên tục (persistent connection)</strong>, cho phép Server <strong>chủ động đẩy (push)</strong> dữ liệu xuống Client ngay khi sự kiện xảy ra, gần như triệt tiêu thời gian chờ đợi.</p>
+</blockquote>
+<p>Sự khác biệt cốt lõi là sự chuyển dịch từ thế <strong>bị động (Client phải hỏi)</strong> sang thế <strong>chủ động (Server tự gửi)</strong>.</p>
+<hr>
+<h2 id="4-cái-giá-của-sự-tức-thời-trade-offs">4. Cái giá của sự “tức thời” (Trade-offs)<a hidden class="anchor" aria-hidden="true" href="#4-cái-giá-của-sự-tức-thời-trade-offs">#</a></h2>
+<p>Real-Time <strong>không phải là chiếc đũa thần</strong>. Để đổi lấy tốc độ, hệ thống phải đánh đổi tài nguyên.</p>
+<table>
+  <thead>
+      <tr>
+          <th>Tiêu chí</th>
+          <th>Web truyền thống (Polling)</th>
+          <th>Real-Time (Push / WebSocket)</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Độ phức tạp</td>
+          <td>Dễ triển khai, dễ debug</td>
+          <td>Phức tạp, khó xử lý lỗi</td>
+      </tr>
+      <tr>
+          <td>Tài nguyên Server</td>
+          <td>Nhẹ khi idle</td>
+          <td>Tốn RAM &amp; CPU</td>
+      </tr>
+      <tr>
+          <td>Pin thiết bị</td>
+          <td>Tiết kiệm pin</td>
+          <td>Hao pin hơn</td>
+      </tr>
+      <tr>
+          <td>Khả năng mở rộng</td>
+          <td>Dễ phục vụ hàng triệu user</td>
+          <td>Cần hạ tầng đặc biệt</td>
+      </tr>
+  </tbody>
+</table>
+<p>👉 <strong>Góc nhìn hệ thống:</strong></p>
+<ul>
+<li>Blog, News → ❌ Không cần Real-Time</li>
+<li>Chat, Notification, Game, Monitoring → ✅ Bắt buộc Real-Time</li>
+</ul>
+<hr>
+<h2 id="tạm-kết">Tạm kết<a hidden class="anchor" aria-hidden="true" href="#tạm-kết">#</a></h2>
+<p>Qua bài viết này, bạn đã nắm được bản chất cốt lõi:<br>
+<strong>Real-Time là câu chuyện của PUSH (Đẩy)</strong> và cái giá phải trả về tài nguyên hệ thống.</p>
+<p>Vậy làm thế nào để Server có thể giữ hàng ngàn kết nối liên tục mà không “sập”?<br>
+Đó chính là chủ đề của bài tiếp theo về kiến trúc <strong>Client–Server</strong>.</p>
+
+
+      </div>
+
+      
+      <footer class="post-footer">
+        <ul class="post-tags">
+          <li>
+            <a href="http://localhost:1313/tags/networking/">Networking</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/real-time/">Real-Time</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/concept/">Concept</a>
+          </li>
+        </ul>
+          
+<nav class="paginav">
+  <a class="next" href="http://localhost:1313/realtime/client-server/">
+    <span class="title">Trang tiếp theo »</span>
+    <br>
+    <span>Bài 2: Client–Server trong Real-Time: Từ “Hỏi–Đáp” đến “Hội thoại”</span>
+  </a>
+</nav>
+
+      </footer>
+
+      
+
+    </article>
+  </div>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Ngọc Trinh - Blog Lập Trình Mạng</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+<script src="http://localhost:1313/js/particle-bg.js"></script>
+
+
+<div class="christmas-tree"></div>
+
+
+<script src="http://localhost:1313/js/christmas-bg.js" defer></script>
+
+
+<script>
+(function () {
+  function mountChristmasToggle() {
+    const themeBtn = document.getElementById("theme-toggle");
+    if (!themeBtn) return;
+
+     
+    if (document.getElementById("christmas-toggle")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "christmas-toggle";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "Christmas mode");
+    btn.title = "Christmas mode";
+
+     
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="18" height="18"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           aria-hidden="true">
+        <path d="M12 2 8.5 8h7L12 2Z"/>
+        <path d="M12 6 6 14h12L12 6Z"/>
+        <path d="M12 10 4 20h16L12 10Z"/>
+        <path d="M12 20v2"/>
+      </svg>
+    `;
+
+     
+    btn.className = themeBtn.className;     
+    btn.style.marginLeft = "6px";
+    btn.style.padding = "0";
+    btn.style.background = "transparent";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.display = "inline-flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+    btn.style.color = "inherit";             
+
+     
+    themeBtn.insertAdjacentElement("afterend", btn);
+
+     
+    if (localStorage.getItem("christmas") === "true") {
+      document.documentElement.classList.add("christmas");
+    }
+
+     
+    btn.addEventListener("click", () => {
+      const enabled = document.documentElement.classList.toggle("christmas");
+      localStorage.setItem("christmas", enabled ? "true" : "false");
+    });
+  }
+
+   
+  const obs = new MutationObserver(() => {
+    if (document.getElementById("theme-toggle")) {
+      mountChristmasToggle();
+      obs.disconnect();
+    }
+  });
+
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'Sao chép';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'Đã sao chép!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'Sao chép';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

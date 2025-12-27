@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Bài 9: HTTP vs. WebSocket – Cuộc chiến cuối cùng &amp; Lời kết | Ngọc Trinh - Blog Lập Trình Mạng</title>
+<meta name="keywords" content="Architecture, HTTP, WebSocket, Real-Time">
+<meta name="description" content="Khép lại hành trình Real-Time: Khi nào nên dùng HTTP truyền thống và khi nào WebSocket là lựa chọn bắt buộc? Tư duy chọn công nghệ quan trọng hơn công nghệ.">
+<meta name="author" content="Ngọc Trinh">
+<link rel="canonical" href="http://localhost:1313/realtime/http-vs-realtime/">
+<link crossorigin="anonymous" href="http://localhost:1313/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css" integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/realtime/http-vs-realtime/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><link rel="stylesheet" href="http://localhost:1313/css/blog-layout.css">
+<link rel="stylesheet" href="http://localhost:1313/css/custom.css">
+<link rel="stylesheet" href="http://localhost:1313/css/christmas.css">
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Ngọc Trinh - Blog Lập Trình Mạng (Alt + H)">Ngọc Trinh - Blog Lập Trình Mạng</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blog/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/topics/" title="Topics">
+                    <span>Topics</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/roadmaps/" title="Roadmaps">
+                    <span>Roadmaps</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/contact/" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+
+
+
+  
+  
+
+  <aside style="
+    position:fixed;
+    right:28px;
+    top:120px;
+    width:320px;
+    z-index:60;
+    pointer-events:none;
+  ">
+    <div class="toc-card" style="
+      pointer-events:auto;
+      background:var(--entry);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:1.4rem 1.4rem 1.2rem;
+      box-shadow:0 18px 48px rgba(0,0,0,0.10);
+      font-size:0.86rem;
+      line-height:1.6;
+    ">
+
+      
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        font-weight:600;
+        font-size:0.9rem;
+        margin-bottom:12px;
+        padding-bottom:10px;
+        border-bottom:1px solid var(--border);
+      ">
+        <span>📑 Mục lục</span>
+
+        <button
+          aria-label="Toggle TOC"
+          onclick="
+            var toc = this.closest('.toc-card').querySelector('.toc-body');
+            if (toc.style.display === 'none') {
+              toc.style.display = '';
+              this.textContent = '−';
+            } else {
+              toc.style.display = 'none';
+              this.textContent = '+';
+            }
+          "
+          style="
+            background:none;
+            border:none;
+            cursor:pointer;
+            font-size:1.1rem;
+            font-weight:600;
+            color:var(--secondary);
+          "
+        >−</button>
+      </div>
+
+      
+      <div class="toc-body" style="max-height:calc(100vh - 260px); overflow-y:auto;">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-http-vs-websocket--không-phải-cái-nào-xịn-hơn">1. HTTP vs. WebSocket – Không phải cái nào “xịn” hơn</a>
+      <ul>
+        <li><a href="#http--người-vận-chuyển-cồng-kềnh-nhưng-bền-bỉ">HTTP – Người vận chuyển cồng kềnh nhưng bền bỉ</a></li>
+        <li><a href="#websocket--đường-ống-tốc-độ-cao">WebSocket – Đường ống tốc độ cao</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-cây-quyết-định-dùng-cái-nào">2. Cây quyết định: Dùng cái nào?</a>
+      <ul>
+        <li><a href="#dùng-http-khi">Dùng HTTP khi:</a></li>
+        <li><a href="#dùng-websocket-khi">Dùng WebSocket khi:</a></li>
+        <li><a href="#dùng-sse-server-sent-events-khi">Dùng SSE (Server-Sent Events) khi:</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-tổng-hợp-hành-trình-9-bài">3. Tổng hợp hành trình 9 bài</a>
+      <ul>
+        <li><a href="#chặng-1--network">Chặng 1 – Network</a></li>
+        <li><a href="#chặng-2--javascript-runtime">Chặng 2 – JavaScript Runtime</a></li>
+        <li><a href="#chặng-3--kiến-trúc-real-time">Chặng 3 – Kiến trúc Real-Time</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-lời-nhắn-nhủ-cuối-cùng">4. Lời nhắn nhủ cuối cùng</a></li>
+  </ul>
+</nav>
+      </div>
+
+    </div>
+  </aside>
+
+  <style>
+    #TableOfContents { font-size:0.86rem; }
+    #TableOfContents ul { list-style:none; margin:0; padding:0; }
+    #TableOfContents li { margin:6px 0; }
+
+    #TableOfContents a{
+      display:block;
+      padding:4px 8px;
+      border-radius:6px;
+      text-decoration:none;
+      color:var(--secondary);
+      transition:background .15s,color .15s;
+    }
+    #TableOfContents a:hover{
+      background:rgba(0,0,0,.04);
+      color:var(--primary);
+    }
+
+    #TableOfContents ul ul{
+      margin-top:4px;
+      padding-left:16px;
+      border-left:1px solid var(--border);
+    }
+    #TableOfContents ul ul a{ font-size:.84rem; padding-left:12px; }
+    #TableOfContents ul ul ul a{ font-size:.82rem; }
+  </style>
+
+  
+
+  
+  
+
+
+
+
+<main class="main">
+  <div class="container">
+    <article class="post-single">
+
+      
+      <header class="post-header">
+        
+
+        <h1 class="post-title">
+          Bài 9: HTTP vs. WebSocket – Cuộc chiến cuối cùng &amp; Lời kết
+        </h1>
+        <div class="post-meta">
+          <span title='2025-12-29 08:00:00 +0700 +07'>December 29, 2025</span>&nbsp;·&nbsp;<span>3 phút</span>&nbsp;·&nbsp;<span>Ngọc Trinh</span>
+          
+          
+
+          
+
+        </div>
+      </header>
+
+      
+       
+
+      
+      <div class="post-content">
+          <p>Vậy là chúng ta đã đi đến <strong>bài viết cuối cùng</strong> của chuỗi Real-Time Communications.</p>
+<p>Từ những khái niệm nền tảng nhất của <strong>Mạng máy tính</strong>,<br>
+đến cách <strong>JavaScript đơn luồng</strong> xử lý hàng nghìn kết nối,<br>
+và cuối cùng là <strong>Event Loop</strong> – trái tim vận hành của toàn bộ hệ thống.</p>
+<p>Bài viết này không giới thiệu công nghệ mới.<br>
+Nó giúp bạn <strong>ra quyết định đúng</strong>.</p>
+<hr>
+<h2 id="1-http-vs-websocket--không-phải-cái-nào-xịn-hơn">1. HTTP vs. WebSocket – Không phải cái nào “xịn” hơn<a hidden class="anchor" aria-hidden="true" href="#1-http-vs-websocket--không-phải-cái-nào-xịn-hơn">#</a></h2>
+<p>Sai lầm phổ biến nhất của người mới:</p>
+<blockquote>
+<p><em>“WebSocket nhanh hơn, vậy dùng WebSocket cho mọi thứ.”</em></p>
+</blockquote>
+<p>Sai.</p>
+<p>WebSocket <strong>nhanh</strong>, nhưng nó <strong>đắt đỏ</strong> (về tài nguyên).<br>
+HTTP <strong>chậm hơn</strong>, nhưng <strong>nhẹ và bền vững</strong>.</p>
+<p><img alt="HTTP vs WebSocket Overhead" loading="lazy" src="http://localhost:1313/images/9/http-vs-websocket-overhead.jpg">
+<em>Hình 1: HTTP mang nhiều “hành lý”, WebSocket tối giản dữ liệu</em></p>
+<hr>
+<h3 id="http--người-vận-chuyển-cồng-kềnh-nhưng-bền-bỉ">HTTP – Người vận chuyển cồng kềnh nhưng bền bỉ<a hidden class="anchor" aria-hidden="true" href="#http--người-vận-chuyển-cồng-kềnh-nhưng-bền-bỉ">#</a></h3>
+<p>Đặc điểm:</p>
+<ul>
+<li>Mỗi request mang theo:
+<ul>
+<li>Header</li>
+<li>Cookie</li>
+<li>Metadata</li>
+</ul>
+</li>
+<li>Kết nối:
+<ul>
+<li>Gửi xong → đóng</li>
+</ul>
+</li>
+<li>Stateless</li>
+</ul>
+<p>Hệ quả:</p>
+<ul>
+<li>Overhead lớn</li>
+<li>Nhưng:
+<ul>
+<li>Dễ cache</li>
+<li>Dễ scale</li>
+<li>Server nhẹ</li>
+<li>SEO tốt</li>
+</ul>
+</li>
+</ul>
+<p>👉 <strong>HTTP sinh ra cho Web truyền thống</strong></p>
+<hr>
+<h3 id="websocket--đường-ống-tốc-độ-cao">WebSocket – Đường ống tốc độ cao<a hidden class="anchor" aria-hidden="true" href="#websocket--đường-ống-tốc-độ-cao">#</a></h3>
+<p>Đặc điểm:</p>
+<ul>
+<li>Handshake 1 lần</li>
+<li>Giữ kết nối liên tục</li>
+<li>Truyền dữ liệu tinh gọn</li>
+</ul>
+<p>Hệ quả:</p>
+<ul>
+<li>Overhead cực thấp</li>
+<li>Nhưng:
+<ul>
+<li>Server phải giữ hàng nghìn kết nối</li>
+<li>Tốn RAM</li>
+<li>Phức tạp khi scale</li>
+</ul>
+</li>
+</ul>
+<p>👉 <strong>WebSocket sinh ra cho Real-Time thực sự</strong></p>
+<hr>
+<h2 id="2-cây-quyết-định-dùng-cái-nào">2. Cây quyết định: Dùng cái nào?<a hidden class="anchor" aria-hidden="true" href="#2-cây-quyết-định-dùng-cái-nào">#</a></h2>
+<p>Là kỹ sư, nhiệm vụ của bạn không phải là <em>dùng công nghệ mới nhất</em>,<br>
+mà là <em>chọn công nghệ phù hợp nhất</em>.</p>
+<p><img alt="Technology Decision Tree" loading="lazy" src="http://localhost:1313/images/9/technology-decision-tree.jpg">
+<em>Hình 2: Sơ đồ quyết định công nghệ Real-Time</em></p>
+<hr>
+<h3 id="dùng-http-khi">Dùng HTTP khi:<a hidden class="anchor" aria-hidden="true" href="#dùng-http-khi">#</a></h3>
+<ul>
+<li>Blog, tin tức</li>
+<li>Website thương mại điện tử</li>
+<li>Dữ liệu không cần tức thì</li>
+<li>Người dùng F5 cũng không sao</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>HTTP = đơn giản, bền bỉ, tiết kiệm
+</span></span></code></pre></div><hr>
+<h3 id="dùng-websocket-khi">Dùng WebSocket khi:<a hidden class="anchor" aria-hidden="true" href="#dùng-websocket-khi">#</a></h3>
+<ul>
+<li>Chat App</li>
+<li>Game Online</li>
+<li>Sàn chứng khoán</li>
+<li>Dashboard giám sát thời gian thực</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>WebSocket = tức thì, hai chiều, low latency
+</span></span></code></pre></div><hr>
+<h3 id="dùng-sse-server-sent-events-khi">Dùng SSE (Server-Sent Events) khi:<a hidden class="anchor" aria-hidden="true" href="#dùng-sse-server-sent-events-khi">#</a></h3>
+<ul>
+<li>Notification</li>
+<li>Bảng điểm</li>
+<li>Live log</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>SSE = Server nói, Client nghe (1 chiều)
+</span></span></code></pre></div><hr>
+<h2 id="3-tổng-hợp-hành-trình-9-bài">3. Tổng hợp hành trình 9 bài<a hidden class="anchor" aria-hidden="true" href="#3-tổng-hợp-hành-trình-9-bài">#</a></h2>
+<p>Chúng ta không học rời rạc.<br>
+Chuỗi bài này là <strong>một lộ trình tư duy hoàn chỉnh</strong>.</p>
+<p><img alt="Realtime Roadmap Summary" loading="lazy" src="http://localhost:1313/images/9/realtime-roadmap-summary.jpg">
+<em>Hình 3: Lộ trình kiến thức Real-Time</em></p>
+<hr>
+<h3 id="chặng-1--network">Chặng 1 – Network<a hidden class="anchor" aria-hidden="true" href="#chặng-1--network">#</a></h3>
+<ul>
+<li>TCP / UDP</li>
+<li>Push vs Pull</li>
+<li>Latency là kẻ thù số 1</li>
+</ul>
+<p>👉 Hiểu <strong>giới hạn vật lý</strong></p>
+<hr>
+<h3 id="chặng-2--javascript-runtime">Chặng 2 – JavaScript Runtime<a hidden class="anchor" aria-hidden="true" href="#chặng-2--javascript-runtime">#</a></h3>
+<ul>
+<li>Single-thread</li>
+<li>Event-Driven</li>
+<li>Async/Await</li>
+<li>Event Loop</li>
+</ul>
+<p>👉 Hiểu <strong>cách máy chạy</strong></p>
+<hr>
+<h3 id="chặng-3--kiến-trúc-real-time">Chặng 3 – Kiến trúc Real-Time<a hidden class="anchor" aria-hidden="true" href="#chặng-3--kiến-trúc-real-time">#</a></h3>
+<ul>
+<li>HTTP vs WebSocket</li>
+<li>Khi nào dùng cái gì</li>
+<li>Đánh đổi hiệu năng – tài nguyên</li>
+</ul>
+<p>👉 Hiểu <strong>cách ra quyết định</strong></p>
+<hr>
+<h2 id="4-lời-nhắn-nhủ-cuối-cùng">4. Lời nhắn nhủ cuối cùng<a hidden class="anchor" aria-hidden="true" href="#4-lời-nhắn-nhủ-cuối-cùng">#</a></h2>
+<p>Công nghệ sẽ còn thay đổi:</p>
+<ul>
+<li>Hôm nay là WebSocket</li>
+<li>Ngày mai là QUIC, WebTransport</li>
+</ul>
+<p>Nhưng <strong>tư duy hệ thống</strong> thì không bao giờ lỗi thời.</p>
+<ul>
+<li>Đừng học chỉ để <em>code cho chạy</em></li>
+<li>Hãy học để <strong>hiểu vì sao hệ thống hoạt động như vậy</strong></li>
+<li>Hiểu bản chất → tự tin chọn giải pháp</li>
+</ul>
+<p>Chuỗi bài này bắt đầu từ một <strong>đồ án môn Lập trình mạng máy tính</strong>,<br>
+nhưng giá trị thật sự của nó là:</p>
+<blockquote>
+<p><strong>Bước chuyển từ người viết code sang người hiểu hệ thống.</strong></p>
+</blockquote>
+<p>Cảm ơn bạn đã đi cùng mình đến cuối hành trình.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Code mượt
+</span></span><span style="display:flex;"><span>Tư duy thoáng
+</span></span><span style="display:flex;"><span>Và Event Loop luôn thông suốt
+</span></span></code></pre></div><hr>
+<p><em>Hết series Real-Time Communications.</em></p>
+
+
+      </div>
+
+      
+      <footer class="post-footer">
+        <ul class="post-tags">
+          <li>
+            <a href="http://localhost:1313/tags/architecture/">Architecture</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/http/">HTTP</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/websocket/">WebSocket</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/real-time/">Real-Time</a>
+          </li>
+        </ul>
+          
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/realtime/event-loop/">
+    <span class="title">« Trang trước</span>
+    <br>
+    <span>Bài 8: Event Loop – Trái tim vận hành của JavaScript</span>
+  </a>
+</nav>
+
+      </footer>
+
+      
+
+    </article>
+  </div>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Ngọc Trinh - Blog Lập Trình Mạng</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+<script src="http://localhost:1313/js/particle-bg.js"></script>
+
+
+<div class="christmas-tree"></div>
+
+
+<script src="http://localhost:1313/js/christmas-bg.js" defer></script>
+
+
+<script>
+(function () {
+  function mountChristmasToggle() {
+    const themeBtn = document.getElementById("theme-toggle");
+    if (!themeBtn) return;
+
+     
+    if (document.getElementById("christmas-toggle")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "christmas-toggle";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "Christmas mode");
+    btn.title = "Christmas mode";
+
+     
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="18" height="18"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           aria-hidden="true">
+        <path d="M12 2 8.5 8h7L12 2Z"/>
+        <path d="M12 6 6 14h12L12 6Z"/>
+        <path d="M12 10 4 20h16L12 10Z"/>
+        <path d="M12 20v2"/>
+      </svg>
+    `;
+
+     
+    btn.className = themeBtn.className;     
+    btn.style.marginLeft = "6px";
+    btn.style.padding = "0";
+    btn.style.background = "transparent";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.display = "inline-flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+    btn.style.color = "inherit";             
+
+     
+    themeBtn.insertAdjacentElement("afterend", btn);
+
+     
+    if (localStorage.getItem("christmas") === "true") {
+      document.documentElement.classList.add("christmas");
+    }
+
+     
+    btn.addEventListener("click", () => {
+      const enabled = document.documentElement.classList.toggle("christmas");
+      localStorage.setItem("christmas", enabled ? "true" : "false");
+    });
+  }
+
+   
+  const obs = new MutationObserver(() => {
+    if (document.getElementById("theme-toggle")) {
+      mountChristmasToggle();
+      obs.disconnect();
+    }
+  });
+
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'Sao chép';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'Đã sao chép!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'Sao chép';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

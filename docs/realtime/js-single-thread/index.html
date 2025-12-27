@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Bài 5: JavaScript: Vì sao đơn luồng (Single-thread) vẫn xử lý Real-Time tốt? | Ngọc Trinh - Blog Lập Trình Mạng</title>
+<meta name="keywords" content="JavaScript, Async, Single-Thread">
+<meta name="description" content="Nghịch lý lớn nhất của JavaScript: Làm sao một ngôn ngữ chỉ có một luồng xử lý lại phục vụ hàng ngàn kết nối Real-Time hiệu quả?">
+<meta name="author" content="Ngọc Trinh">
+<link rel="canonical" href="http://localhost:1313/realtime/js-single-thread/">
+<link crossorigin="anonymous" href="http://localhost:1313/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css" integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/realtime/js-single-thread/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><link rel="stylesheet" href="http://localhost:1313/css/blog-layout.css">
+<link rel="stylesheet" href="http://localhost:1313/css/custom.css">
+<link rel="stylesheet" href="http://localhost:1313/css/christmas.css">
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Ngọc Trinh - Blog Lập Trình Mạng (Alt + H)">Ngọc Trinh - Blog Lập Trình Mạng</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blog/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/topics/" title="Topics">
+                    <span>Topics</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/roadmaps/" title="Roadmaps">
+                    <span>Roadmaps</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/contact/" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+
+
+
+  
+  
+
+  <aside style="
+    position:fixed;
+    right:28px;
+    top:120px;
+    width:320px;
+    z-index:60;
+    pointer-events:none;
+  ">
+    <div class="toc-card" style="
+      pointer-events:auto;
+      background:var(--entry);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:1.4rem 1.4rem 1.2rem;
+      box-shadow:0 18px 48px rgba(0,0,0,0.10);
+      font-size:0.86rem;
+      line-height:1.6;
+    ">
+
+      
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        font-weight:600;
+        font-size:0.9rem;
+        margin-bottom:12px;
+        padding-bottom:10px;
+        border-bottom:1px solid var(--border);
+      ">
+        <span>📑 Mục lục</span>
+
+        <button
+          aria-label="Toggle TOC"
+          onclick="
+            var toc = this.closest('.toc-card').querySelector('.toc-body');
+            if (toc.style.display === 'none') {
+              toc.style.display = '';
+              this.textContent = '−';
+            } else {
+              toc.style.display = 'none';
+              this.textContent = '+';
+            }
+          "
+          style="
+            background:none;
+            border:none;
+            cursor:pointer;
+            font-size:1.1rem;
+            font-weight:600;
+            color:var(--secondary);
+          "
+        >−</button>
+      </div>
+
+      
+      <div class="toc-body" style="max-height:calc(100vh - 260px); overflow-y:auto;">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-tư-duy-khác-biệt-đa-luồng-vs-đơn-luồng">1. Tư duy khác biệt: Đa luồng vs. Đơn luồng</a>
+      <ul>
+        <li><a href="#mô-hình-truyền-thống--multi-threaded">Mô hình truyền thống – Multi-threaded</a></li>
+        <li><a href="#cách-javascript-làm--single-thread--non-blocking">Cách JavaScript làm – Single-thread + Non-blocking</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-chứng-minh-bằng-code-javascript-không-bao-giờ-chờ">2. Chứng minh bằng code: JavaScript không bao giờ chờ</a></li>
+    <li><a href="#3-vì-sao-non-blocking-sống-còn-với-real-time">3. Vì sao Non-blocking sống còn với Real-Time?</a></li>
+    <li><a href="#4-javascript-không-song-song-nhưng-cực-kỳ-đồng-thời">4. JavaScript không song song, nhưng cực kỳ đồng thời</a></li>
+    <li><a href="#tạm-kết">Tạm kết</a></li>
+  </ul>
+</nav>
+      </div>
+
+    </div>
+  </aside>
+
+  <style>
+    #TableOfContents { font-size:0.86rem; }
+    #TableOfContents ul { list-style:none; margin:0; padding:0; }
+    #TableOfContents li { margin:6px 0; }
+
+    #TableOfContents a{
+      display:block;
+      padding:4px 8px;
+      border-radius:6px;
+      text-decoration:none;
+      color:var(--secondary);
+      transition:background .15s,color .15s;
+    }
+    #TableOfContents a:hover{
+      background:rgba(0,0,0,.04);
+      color:var(--primary);
+    }
+
+    #TableOfContents ul ul{
+      margin-top:4px;
+      padding-left:16px;
+      border-left:1px solid var(--border);
+    }
+    #TableOfContents ul ul a{ font-size:.84rem; padding-left:12px; }
+    #TableOfContents ul ul ul a{ font-size:.82rem; }
+  </style>
+
+  
+
+  
+  
+
+
+
+
+<main class="main">
+  <div class="container">
+    <article class="post-single">
+
+      
+      <header class="post-header">
+        
+
+        <h1 class="post-title">
+          Bài 5: JavaScript: Vì sao đơn luồng (Single-thread) vẫn xử lý Real-Time tốt?
+        </h1>
+        <div class="post-meta">
+          <span title='2025-12-25 08:00:00 +0700 +07'>December 25, 2025</span>&nbsp;·&nbsp;<span>3 phút</span>&nbsp;·&nbsp;<span>Ngọc Trinh</span>
+          
+          
+
+          
+
+        </div>
+      </header>
+
+      
+       
+
+      
+      <div class="post-content">
+          <p>Sau khi hiểu rõ hạ tầng mạng và giao thức Real-Time, câu hỏi tiếp theo là:</p>
+<blockquote>
+<p><strong>Dùng ngôn ngữ nào để xây dựng Real-Time Server hiệu quả?</strong></p>
+</blockquote>
+<p>Câu trả lời thực tế nhất hiện nay là <strong>JavaScript (Node.js)</strong>.</p>
+<p>Nhưng ở đây xuất hiện một nghịch lý khiến nhiều người mới học hoang mang:</p>
+<ul>
+<li>JavaScript là <strong>Single-threaded</strong></li>
+<li>Một thời điểm chỉ làm <strong>một việc</strong></li>
+<li>Chỉ có <strong>một Main Thread</strong></li>
+</ul>
+<p>Vậy tại sao nó lại được dùng để xây dựng:</p>
+<ul>
+<li>Chat Server</li>
+<li>Notification Server</li>
+<li>WebSocket Server cho hàng ngàn người dùng?</li>
+</ul>
+<p>Câu trả lời nằm ở tư duy cốt lõi: <strong>Non-blocking I/O</strong>.</p>
+<hr>
+<h2 id="1-tư-duy-khác-biệt-đa-luồng-vs-đơn-luồng">1. Tư duy khác biệt: Đa luồng vs. Đơn luồng<a hidden class="anchor" aria-hidden="true" href="#1-tư-duy-khác-biệt-đa-luồng-vs-đơn-luồng">#</a></h2>
+<p>Hãy tưởng tượng Server của bạn là một <strong>nhà hàng</strong>.</p>
+<p><img alt="Waiter Analogy" loading="lazy" src="http://localhost:1313/images/5/blocking-vs-nonblocking-waiter.jpg">
+<em>Hình 1: Một bồi bàn thông minh hiệu quả hơn cả trăm bồi bàn đứng chờ</em></p>
+<hr>
+<h3 id="mô-hình-truyền-thống--multi-threaded">Mô hình truyền thống – Multi-threaded<a hidden class="anchor" aria-hidden="true" href="#mô-hình-truyền-thống--multi-threaded">#</a></h3>
+<p>Cách tiếp cận này giống như:</p>
+<ul>
+<li>Mỗi khách → một bồi bàn riêng</li>
+<li>Bồi bàn phục vụ từ A đến Z</li>
+</ul>
+<p>Quy trình:</p>
+<ol>
+<li>Khách gọi món</li>
+<li>Bồi bàn chạy vào bếp</li>
+<li><strong>Đứng chờ bếp nấu xong</strong> (blocking)</li>
+<li>Trong lúc đó, không phục vụ ai khác</li>
+</ol>
+<p>Hệ quả:</p>
+<ul>
+<li>1.000 khách → 1.000 bồi bàn</li>
+<li>Tốn RAM</li>
+<li>Context switching nặng</li>
+<li>Dễ sập khi tải cao</li>
+</ul>
+<hr>
+<h3 id="cách-javascript-làm--single-thread--non-blocking">Cách JavaScript làm – Single-thread + Non-blocking<a hidden class="anchor" aria-hidden="true" href="#cách-javascript-làm--single-thread--non-blocking">#</a></h3>
+<p>Node.js chỉ có <strong>một bồi bàn duy nhất</strong>, nhưng rất thông minh.</p>
+<p>Quy trình:</p>
+<ol>
+<li>Khách gọi món → ghi phiếu</li>
+<li>Quăng phiếu vào bếp</li>
+<li><strong>Không đứng chờ</strong></li>
+<li>Quay sang phục vụ khách tiếp theo</li>
+</ol>
+<p>Khi bếp nấu xong:</p>
+<ul>
+<li>Bếp bấm chuông</li>
+<li>Bồi bàn quay lại bưng món</li>
+</ul>
+<blockquote>
+<p>JavaScript không làm nhiều việc cùng lúc<br>
+mà <strong>không bao giờ ngồi chờ việc lâu</strong></p>
+</blockquote>
+<hr>
+<h2 id="2-chứng-minh-bằng-code-javascript-không-bao-giờ-chờ">2. Chứng minh bằng code: JavaScript không bao giờ chờ<a hidden class="anchor" aria-hidden="true" href="#2-chứng-minh-bằng-code-javascript-không-bao-giờ-chờ">#</a></h2>
+<p>Xem đoạn code sau:</p>
+<p><img alt="JS Async Proof" loading="lazy" src="http://localhost:1313/images/5/js-async-proof.png">
+<em>Hình 2: Dòng lệnh thứ 3 chạy trước dòng lệnh thứ 2</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;1) Start&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Giả lập tác vụ tốn thời gian (I/O)
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">setTimeout</span>(() =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;2) Timer callback (Bếp nấu xong)&#34;</span>);
+</span></span><span style="display:flex;"><span>}, <span style="color:#ae81ff">1000</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;3) End&#34;</span>);
+</span></span></code></pre></div><p>Kết quả in ra:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>1) Start
+</span></span><span style="display:flex;"><span>3) End
+</span></span><span style="display:flex;"><span>2) Timer callback (Bếp nấu xong)
+</span></span></code></pre></div><p>Phân tích:</p>
+<ul>
+<li><code>setTimeout</code> là tác vụ <strong>I/O</strong></li>
+<li>JavaScript <strong>đẩy nó ra ngoài Main Thread</strong></li>
+<li>Main Thread tiếp tục chạy lệnh tiếp theo</li>
+<li>Khi timer xong → callback được đưa trở lại</li>
+</ul>
+<p>Đây chính là <strong>Non-blocking I/O</strong>.</p>
+<hr>
+<h2 id="3-vì-sao-non-blocking-sống-còn-với-real-time">3. Vì sao Non-blocking sống còn với Real-Time?<a hidden class="anchor" aria-hidden="true" href="#3-vì-sao-non-blocking-sống-còn-với-real-time">#</a></h2>
+<p>Trong Chat / Game / Notification:</p>
+<ul>
+<li>Gửi tin nhắn</li>
+<li>Ghi database</li>
+<li>Gửi dữ liệu qua mạng</li>
+</ul>
+<p>Tất cả đều là <strong>I/O chậm</strong>.</p>
+<p>Nếu Server:</p>
+<ul>
+<li>đứng chờ I/O
+→ toàn bộ hệ thống bị treo</li>
+</ul>
+<p>Với JavaScript:</p>
+<ul>
+<li>I/O chạy ngầm</li>
+<li>Server vẫn tiếp tục nhận sự kiện mới</li>
+<li>Hàng ngàn Client vẫn hoạt động song song</li>
+</ul>
+<blockquote>
+<p><strong>Một người gửi ảnh nặng không làm 999 người khác bị đứng hình.</strong></p>
+</blockquote>
+<hr>
+<h2 id="4-javascript-không-song-song-nhưng-cực-kỳ-đồng-thời">4. JavaScript không song song, nhưng cực kỳ đồng thời<a hidden class="anchor" aria-hidden="true" href="#4-javascript-không-song-song-nhưng-cực-kỳ-đồng-thời">#</a></h2>
+<p>JavaScript:</p>
+<ul>
+<li>❌ Không làm việc song song (Parallel)</li>
+<li>✅ Xử lý đồng thời (Concurrent)</li>
+</ul>
+<p>Điều này đặc biệt phù hợp với:</p>
+<ul>
+<li>WebSocket Server</li>
+<li>API Server</li>
+<li>Event-driven System</li>
+</ul>
+<hr>
+<h2 id="tạm-kết">Tạm kết<a hidden class="anchor" aria-hidden="true" href="#tạm-kết">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>JavaScript đơn luồng không phải điểm yếu.
+</span></span><span style="display:flex;"><span>Nó là thiết kế có chủ đích để tối ưu I/O.
+</span></span></code></pre></div><p>Nhờ:</p>
+<ul>
+<li>Non-blocking I/O</li>
+<li>Event Loop</li>
+<li>Callback / Promise / Async-Await</li>
+</ul>
+<p>JavaScript trở thành <strong>nền tảng vàng cho Real-Time Web</strong>.</p>
+<p>Nhưng làm sao bồi bàn biết <strong>khi nào bếp nấu xong</strong>?<br>
+Cơ chế nào giúp JavaScript nhận “chuông báo” để xử lý callback?</p>
+
+
+      </div>
+
+      
+      <footer class="post-footer">
+        <ul class="post-tags">
+          <li>
+            <a href="http://localhost:1313/tags/javascript/">JavaScript</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/async/">Async</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/single-thread/">Single-Thread</a>
+          </li>
+        </ul>
+          
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/realtime/latency/">
+    <span class="title">« Trang trước</span>
+    <br>
+    <span>Bài 4: Latency (Độ trễ) – Vì sao mạng mạnh mà Game vẫn Lag?</span>
+  </a>
+  <a class="next" href="http://localhost:1313/realtime/event-driven/">
+    <span class="title">Trang tiếp theo »</span>
+    <br>
+    <span>Bài 6: Event-Driven Programming: Lắng nghe thay vì chờ đợi</span>
+  </a>
+</nav>
+
+      </footer>
+
+      
+
+    </article>
+  </div>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Ngọc Trinh - Blog Lập Trình Mạng</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+<script src="http://localhost:1313/js/particle-bg.js"></script>
+
+
+<div class="christmas-tree"></div>
+
+
+<script src="http://localhost:1313/js/christmas-bg.js" defer></script>
+
+
+<script>
+(function () {
+  function mountChristmasToggle() {
+    const themeBtn = document.getElementById("theme-toggle");
+    if (!themeBtn) return;
+
+     
+    if (document.getElementById("christmas-toggle")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "christmas-toggle";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "Christmas mode");
+    btn.title = "Christmas mode";
+
+     
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="18" height="18"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           aria-hidden="true">
+        <path d="M12 2 8.5 8h7L12 2Z"/>
+        <path d="M12 6 6 14h12L12 6Z"/>
+        <path d="M12 10 4 20h16L12 10Z"/>
+        <path d="M12 20v2"/>
+      </svg>
+    `;
+
+     
+    btn.className = themeBtn.className;     
+    btn.style.marginLeft = "6px";
+    btn.style.padding = "0";
+    btn.style.background = "transparent";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.display = "inline-flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+    btn.style.color = "inherit";             
+
+     
+    themeBtn.insertAdjacentElement("afterend", btn);
+
+     
+    if (localStorage.getItem("christmas") === "true") {
+      document.documentElement.classList.add("christmas");
+    }
+
+     
+    btn.addEventListener("click", () => {
+      const enabled = document.documentElement.classList.toggle("christmas");
+      localStorage.setItem("christmas", enabled ? "true" : "false");
+    });
+  }
+
+   
+  const obs = new MutationObserver(() => {
+    if (document.getElementById("theme-toggle")) {
+      mountChristmasToggle();
+      obs.disconnect();
+    }
+  });
+
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'Sao chép';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'Đã sao chép!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'Sao chép';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

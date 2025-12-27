@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ngọc Trinh - Professional 3D Particle System</title>
+    <style>
+        :root { --primary: #00d2ff; --bg: #050508; }
+        body { margin: 0; overflow: hidden; background: var(--bg); font-family: 'Segoe UI', sans-serif; }
+        
+        #ui-panel {
+            position: absolute; top: 25px; left: 25px; z-index: 100;
+            background: rgba(15, 15, 25, 0.85); backdrop-filter: blur(15px);
+            padding: 25px; border-radius: 20px; color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1); width: 280px;
+        }
+
+        #status-text { font-weight: 600; font-size: 1.1em; color: var(--primary); text-transform: uppercase; }
+        .control-row { display: flex; align-items: center; justify-content: space-between; margin: 20px 0; }
+        input[type="color"] { border: none; width: 40px; height: 40px; cursor: pointer; background: none; }
+
+        .legend { font-size: 0.9em; line-height: 1.8; color: rgba(255,255,255,0.7); border-top: 1px solid rgba(255,255,255,0.1); pt: 15px; }
+        .legend b { color: #fff; display: inline-block; width: 80px; }
+        .legend i { color: var(--primary); font-style: normal; font-weight: bold; }
+
+        #video-container {
+            position: absolute; bottom: 25px; right: 25px;
+            width: 240px; height: 180px; border-radius: 16px;
+            overflow: hidden; border: 2px solid rgba(0, 210, 255, 0.2);
+            transform: scaleX(-1); background: #000;
+        }
+        video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+        canvas#output_canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+
+    <div id="ui-panel">
+        <div style="font-size: 0.75em; opacity: 0.5; margin-bottom: 5px;">HAND TRACKING STATUS (Controls: H hide UI )</div>
+        <div id="status-text">Khởi tạo...</div>
+
+        <div class="control-row">
+            <label>Màu sắc hạt:</label>
+            <input type="color" id="particleColor" value="#00d2ff">
+        </div>
+        
+        <div class="legend">
+           <div><b>1 Ngón:</b> <i>Hình Vuông</i></div>
+           <div><b>2 Ngón:</b> <i>Hình Thang</i></div>
+           <div><b>3 Ngón:</b> <i>Hình Cầu</i></div>
+           <div><b>4 Ngón:</b> <i>Hình Khối</i></div>
+           <div><b>5 Ngón:</b> <i>Phân tán (Scatter)</i></div>
+           <div style="margin-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;">
+            <b>2 Tay:</b> <i>Thu / Phóng</i>
+           </div>
+        </div>
+    </div>
+
+    <div id="video-container">
+        <video id="input_video" playsinline></video>
+        <canvas id="output_canvas"></canvas>
+    </div>
+
+    <div id="container"></div>
+
+    <script type="importmap">
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        // --- KHAI BÁO BIẾN (SỬ DỤNG TÊN DUY NHẤT) ---
+        let scene, threeCamera, renderer, points, geometry, material;
+        const PARTICLE_COUNT = 15000;
+        const targets = {};
+        let currentPositions;
+        let activeShape = 'sphere';
+        let scaleValue = 1.0;
+        const LERP_FACTOR = 0.08;
+
+        initThreeEngine();
+        generateShapeData();
+        startHandTracking();
+        render();
+
+        function initThreeEngine() {
+            scene = new THREE.Scene();
+            // Đổi tên từ 'camera' thành 'threeCamera' để tránh trùng lặp
+            threeCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            threeCamera.position.z = 6;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('container').appendChild(renderer.domElement);
+
+            geometry = new THREE.BufferGeometry();
+            currentPositions = new Float32Array(PARTICLE_COUNT * 3);
+            geometry.setAttribute('position', new THREE.BufferAttribute(currentPositions, 3));
+
+            material = new THREE.PointsMaterial({
+                color: 0x00d2ff, size: 0.025, transparent: true, opacity: 0.8,
+                blending: THREE.AdditiveBlending, depthWrite: false
+            });
+
+            points = new THREE.Points(geometry, material);
+            scene.add(points);
+        }
+
+        function generateShapeData() {
+            const size = 3;
+            targets.square = new Float32Array(PARTICLE_COUNT * 3);
+            targets.trapezoid = new Float32Array(PARTICLE_COUNT * 3);
+            targets.sphere = new Float32Array(PARTICLE_COUNT * 3);
+            targets.cube = new Float32Array(PARTICLE_COUNT * 3);
+            targets.scatter = new Float32Array(PARTICLE_COUNT * 3);
+
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const i3 = i * 3;
+                // Square
+                targets.square[i3] = (Math.random() - 0.5) * size * 1.8;
+                targets.square[i3+1] = (Math.random() - 0.5) * size * 1.8;
+                // Trapezoid
+                const ty = (Math.random() - 0.5) * size;
+                const taper = 1.0 - (ty / size + 0.5) * 0.7; 
+                targets.trapezoid[i3] = (Math.random() - 0.5) * size * 2.2 * taper;
+                targets.trapezoid[i3+1] = ty;
+                // Sphere
+                const phi = Math.acos(-1 + (2 * i) / PARTICLE_COUNT);
+                const theta = Math.sqrt(PARTICLE_COUNT * Math.PI) * phi;
+                targets.sphere[i3] = Math.sin(phi) * Math.cos(theta) * size * 0.9;
+                targets.sphere[i3+1] = Math.sin(phi) * Math.sin(theta) * size * 0.9;
+                targets.sphere[i3+2] = Math.cos(phi) * size * 0.9;
+                // Cube
+                targets.cube[i3] = (Math.random() - 0.5) * size;
+                targets.cube[i3+1] = (Math.random() - 0.5) * size;
+                targets.cube[i3+2] = (Math.random() - 0.5) * size;
+                // Scatter
+                const r = size * 5 * Math.pow(Math.random(), 0.5);
+                const sPhi = Math.random() * Math.PI * 2;
+                const sTheta = Math.random() * Math.PI;
+                targets.scatter[i3] = r * Math.sin(sTheta) * Math.cos(sPhi);
+                targets.scatter[i3+1] = r * Math.sin(sTheta) * Math.sin(sPhi);
+                targets.scatter[i3+2] = r * Math.cos(sTheta);
+
+                currentPositions[i3] = targets.sphere[i3];
+                currentPositions[i3+1] = targets.sphere[i3+1];
+                currentPositions[i3+2] = targets.sphere[i3+2];
+            }
+        }
+
+        // --- CẢI TIẾN LOGIC ĐẾM NGÓN TAY ---
+        function countFingers(landmarks) {
+            let count = 0;
+            // 4 ngón chính (Trỏ, Giữa, Áp út, Út)
+            const tips = [8, 12, 16, 20];
+            const pips = [6, 10, 14, 18];
+            tips.forEach((tip, idx) => {
+                if (landmarks[tip].y < landmarks[pips[idx]].y) count++;
+            });
+
+            // Ngón cái (Thumb) - Cải tiến độ nhạy X
+            // Sử dụng khoảng cách giữa đầu ngón cái (4) và gốc ngón trỏ (5)
+            const thumbTip = landmarks[4];
+            const indexBase = landmarks[5]; 
+            // Giảm ngưỡng xuống 0.08 để nhạy hơn khi xòe tay
+            if (Math.abs(thumbTip.x - indexBase.x) > 0.08) count++;
+            
+            return count;
+        }
+
+        function startHandTracking() {
+            const videoElement = document.getElementById('input_video');
+            const canvasElement = document.getElementById('output_canvas');
+            const canvasCtx = canvasElement.getContext('2d');
+            const statusText = document.getElementById('status-text');
+
+            const hands = new Hands({
+                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+            });
+
+            hands.setOptions({
+                maxNumHands: 2, modelComplexity: 1,
+                minDetectionConfidence: 0.7, minTrackingConfidence: 0.7
+            });
+
+            hands.onResults((results) => {
+                canvasCtx.save();
+                canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                
+                if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                    if (results.multiHandLandmarks.length === 2) {
+                        statusText.innerText = "👐 Scaling Mode";
+                        const h1 = results.multiHandLandmarks[0][0];
+                        const h2 = results.multiHandLandmarks[1][0];
+                        const dist = Math.sqrt(Math.pow(h1.x - h2.x, 2) + Math.pow(h1.y - h2.y, 2));
+                        scaleValue = THREE.MathUtils.mapLinear(dist, 0.2, 0.7, 0.5, 3.5);
+                    } else {
+                        const count = countFingers(results.multiHandLandmarks[0]);
+                        const map = { 1:'square', 2:'trapezoid', 3:'sphere', 4:'cube', 5:'scatter' };
+                        if (map[count]) {
+                            activeShape = map[count];
+                            scaleValue = 1.0;
+                            statusText.innerText = `🖐 ${count} Fingers: ${activeShape}`;
+                        }
+                    }
+                    for (const lm of results.multiHandLandmarks) {
+                        drawConnectors(canvasCtx, lm, HAND_CONNECTIONS, {color: '#00d2ff', lineWidth: 2});
+                        drawLandmarks(canvasCtx, lm, {color: '#fff', lineWidth: 1, radius: 2});
+                    }
+                } else {
+                    statusText.innerText = "Chờ tay...";
+                }
+                canvasCtx.restore();
+            });
+
+            // Đổi tên từ 'camera' thành 'cameraFeed' để tránh trùng lặp biến toàn cục
+            const cameraFeed = new Camera(videoElement, {
+                onFrame: async () => { await hands.send({image: videoElement}); },
+                width: 640, height: 480
+            });
+            cameraFeed.start();
+        }
+
+        function render() {
+            requestAnimationFrame(render);
+            points.rotation.y += 0.0015;
+            const posArr = geometry.attributes.position.array;
+            const targetArr = targets[activeShape];
+
+            for (let i = 0; i < PARTICLE_COUNT * 3; i++) {
+                const dest = targetArr[i] * scaleValue;
+                posArr[i] += (dest - posArr[i]) * LERP_FACTOR;
+            }
+            geometry.attributes.position.needsUpdate = true;
+            renderer.render(scene, threeCamera);
+        }
+
+        document.getElementById('particleColor').addEventListener('input', (e) => {
+            material.color.set(e.target.value);
+            document.getElementById('status-text').style.color = e.target.value;
+        });
+
+        window.addEventListener('resize', () => {
+            threeCamera.aspect = window.innerWidth / window.innerHeight;
+            threeCamera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        // --- PHÍM H: ẨN / HIỆN UI PANEL ---
+        let uiVisible = true;
+        const uiPanel = document.getElementById('ui-panel');
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'h' || e.key === 'H') {
+                uiVisible = !uiVisible;
+                uiPanel.style.display = uiVisible ? 'block' : 'none';
+            }
+        });
+    </script>
+</body>
+</html>

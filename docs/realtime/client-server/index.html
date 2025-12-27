@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Bài 2: Client–Server trong Real-Time: Từ “Hỏi–Đáp” đến “Hội thoại” | Ngọc Trinh - Blog Lập Trình Mạng</title>
+<meta name="keywords" content="Java, Networking, Client-Server">
+<meta name="description" content="Web truyền thống giống như người mất trí nhớ (Stateless), còn Real-Time là một cuộc hội thoại dài lâu (Stateful). Cùng soi Java Socket để hiểu sự khác biệt.">
+<meta name="author" content="Ngọc Trinh">
+<link rel="canonical" href="http://localhost:1313/realtime/client-server/">
+<link crossorigin="anonymous" href="http://localhost:1313/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css" integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/realtime/client-server/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><link rel="stylesheet" href="http://localhost:1313/css/blog-layout.css">
+<link rel="stylesheet" href="http://localhost:1313/css/custom.css">
+<link rel="stylesheet" href="http://localhost:1313/css/christmas.css">
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Ngọc Trinh - Blog Lập Trình Mạng (Alt + H)">Ngọc Trinh - Blog Lập Trình Mạng</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blog/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/topics/" title="Topics">
+                    <span>Topics</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/roadmaps/" title="Roadmaps">
+                    <span>Roadmaps</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/contact/" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+
+
+
+  
+  
+
+  <aside style="
+    position:fixed;
+    right:28px;
+    top:120px;
+    width:320px;
+    z-index:60;
+    pointer-events:none;
+  ">
+    <div class="toc-card" style="
+      pointer-events:auto;
+      background:var(--entry);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:1.4rem 1.4rem 1.2rem;
+      box-shadow:0 18px 48px rgba(0,0,0,0.10);
+      font-size:0.86rem;
+      line-height:1.6;
+    ">
+
+      
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        font-weight:600;
+        font-size:0.9rem;
+        margin-bottom:12px;
+        padding-bottom:10px;
+        border-bottom:1px solid var(--border);
+      ">
+        <span>📑 Mục lục</span>
+
+        <button
+          aria-label="Toggle TOC"
+          onclick="
+            var toc = this.closest('.toc-card').querySelector('.toc-body');
+            if (toc.style.display === 'none') {
+              toc.style.display = '';
+              this.textContent = '−';
+            } else {
+              toc.style.display = 'none';
+              this.textContent = '+';
+            }
+          "
+          style="
+            background:none;
+            border:none;
+            cursor:pointer;
+            font-size:1.1rem;
+            font-weight:600;
+            color:var(--secondary);
+          "
+        >−</button>
+      </div>
+
+      
+      <div class="toc-body" style="max-height:calc(100vh - 260px); overflow-y:auto;">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-stateless-vs-stateful--câu-chuyện-về-trí-nhớ">1. Stateless vs. Stateful – Câu chuyện về “trí nhớ”</a>
+      <ul>
+        <li><a href="#http--kẻ-mất-trí-nhớ-stateless">HTTP – “Kẻ mất trí nhớ” (Stateless)</a></li>
+        <li><a href="#real-time--cuộc-hội-thoại-dài-lâu-stateful">Real-Time – “Cuộc hội thoại dài lâu” (Stateful)</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-websocket-handshake--cú-bắt-tay-chuyển-từ-http-sang-real-time">2. WebSocket Handshake – “Cú bắt tay” chuyển từ HTTP sang Real-Time</a></li>
+    <li><a href="#3-soi-code--server-real-time-bằng-java-socket">3. Soi code – Server Real-Time bằng Java Socket</a></li>
+    <li><a href="#4-thách-thức-của-mô-hình-stateful">4. Thách thức của mô hình Stateful</a></li>
+    <li><a href="#tạm-kết">Tạm kết</a></li>
+  </ul>
+</nav>
+      </div>
+
+    </div>
+  </aside>
+
+  <style>
+    #TableOfContents { font-size:0.86rem; }
+    #TableOfContents ul { list-style:none; margin:0; padding:0; }
+    #TableOfContents li { margin:6px 0; }
+
+    #TableOfContents a{
+      display:block;
+      padding:4px 8px;
+      border-radius:6px;
+      text-decoration:none;
+      color:var(--secondary);
+      transition:background .15s,color .15s;
+    }
+    #TableOfContents a:hover{
+      background:rgba(0,0,0,.04);
+      color:var(--primary);
+    }
+
+    #TableOfContents ul ul{
+      margin-top:4px;
+      padding-left:16px;
+      border-left:1px solid var(--border);
+    }
+    #TableOfContents ul ul a{ font-size:.84rem; padding-left:12px; }
+    #TableOfContents ul ul ul a{ font-size:.82rem; }
+  </style>
+
+  
+
+  
+  
+
+
+
+
+<main class="main">
+  <div class="container">
+    <article class="post-single">
+
+      
+      <header class="post-header">
+        
+
+        <h1 class="post-title">
+          Bài 2: Client–Server trong Real-Time: Từ “Hỏi–Đáp” đến “Hội thoại”
+        </h1>
+        <div class="post-meta">
+          <span title='2025-12-22 09:00:00 +0700 +07'>December 22, 2025</span>&nbsp;·&nbsp;<span>3 phút</span>&nbsp;·&nbsp;<span>Ngọc Trinh</span>
+          
+          
+
+          
+
+        </div>
+      </header>
+
+      
+       
+
+      
+      <div class="post-content">
+          <p>Ở <strong>Bài 1</strong>, chúng ta đã biết Real-Time sử dụng cơ chế <strong>PUSH (Đẩy)</strong> thay vì <strong>PULL (Kéo)</strong>.<br>
+Vấn đề còn lại là: làm sao hai máy tính có thể giữ kết nối liên tục để “trò chuyện” với nhau?</p>
+<p>Câu trả lời nằm ở sự chuyển dịch từ <strong>Stateless (Không trạng thái)</strong> sang <strong>Stateful (Có trạng thái)</strong>.</p>
+<hr>
+<h2 id="1-stateless-vs-stateful--câu-chuyện-về-trí-nhớ">1. Stateless vs. Stateful – Câu chuyện về “trí nhớ”<a hidden class="anchor" aria-hidden="true" href="#1-stateless-vs-stateful--câu-chuyện-về-trí-nhớ">#</a></h2>
+<h3 id="http--kẻ-mất-trí-nhớ-stateless">HTTP – “Kẻ mất trí nhớ” (Stateless)<a hidden class="anchor" aria-hidden="true" href="#http--kẻ-mất-trí-nhớ-stateless">#</a></h3>
+<p>Khi bạn truy cập một trang web thông thường:</p>
+<ul>
+<li>Trình duyệt gửi HTTP Request</li>
+<li>Server trả về nội dung</li>
+<li>Sau đó <strong>đóng kết nối ngay lập tức</strong></li>
+</ul>
+<p>Nếu 1 giây sau bạn bấm F5, với Server:</p>
+<ul>
+<li>bạn là một client “mới”</li>
+<li>server <strong>không nhớ</strong> bạn vừa ghé thăm</li>
+</ul>
+<p><strong>Ưu điểm:</strong> Server nhẹ, dễ scale.<br>
+<strong>Nhược điểm:</strong> Không thể push tin nhắn real-time vì server không biết ai đang online.</p>
+<hr>
+<h3 id="real-time--cuộc-hội-thoại-dài-lâu-stateful">Real-Time – “Cuộc hội thoại dài lâu” (Stateful)<a hidden class="anchor" aria-hidden="true" href="#real-time--cuộc-hội-thoại-dài-lâu-stateful">#</a></h3>
+<p>Trong Chat/Game:</p>
+<ul>
+<li>Server phải <strong>nhớ</strong> client nào đang kết nối</li>
+<li>Kết nối được giữ sống (keep-alive) cho đến khi client ngắt</li>
+</ul>
+<hr>
+<h2 id="2-websocket-handshake--cú-bắt-tay-chuyển-từ-http-sang-real-time">2. WebSocket Handshake – “Cú bắt tay” chuyển từ HTTP sang Real-Time<a hidden class="anchor" aria-hidden="true" href="#2-websocket-handshake--cú-bắt-tay-chuyển-từ-http-sang-real-time">#</a></h2>
+<p><img alt="WebSocket Handshake Diagram" loading="lazy" src="http://localhost:1313/images/2/websocket-handshake.jpg">
+<em>Hình 1: Quá trình nâng cấp từ HTTP sang WebSocket</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Quá trình diễn ra như sau:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>1) Client mở lời
+</span></span><span style="display:flex;"><span>Gửi một HTTP Request bình thường nhưng kèm header:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Upgrade: websocket
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>→ “Đừng cắt kết nối, ta đổi sang WebSocket nhé!”
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>2) Server chấp nhận
+</span></span><span style="display:flex;"><span>Trả về:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>101 Switching Protocols
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>→ “OK, từ giờ ta dùng WebSocket.”
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>3) Kết nối được giữ nguyên
+</span></span><span style="display:flex;"><span>- TCP connection không bị đóng
+</span></span><span style="display:flex;"><span>- HTTP hoàn thành vai trò
+</span></span><span style="display:flex;"><span>- Từ đây dữ liệu chạy hai chiều qua WebSocket
+</span></span></code></pre></div><hr>
+<h2 id="3-soi-code--server-real-time-bằng-java-socket">3. Soi code – Server Real-Time bằng Java Socket<a hidden class="anchor" aria-hidden="true" href="#3-soi-code--server-real-time-bằng-java-socket">#</a></h2>
+<p><img alt="Java Socket Server" loading="lazy" src="http://localhost:1313/images/2/java-socket-demo.jpg">
+<em>Hình 2: Demo cấu trúc Server lắng nghe liên tục trong Java</em></p>
+<p>Khác với Web Controller chỉ chạy khi có request, Socket Server phải dùng vòng lặp vô tận để luôn “lắng nghe”.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.*;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RealTimeServer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> port <span style="color:#f92672">=</span> 8080;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> (ServerSocket serverSocket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerSocket(port)) {
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Server khởi động tại cổng &#34;</span> <span style="color:#f92672">+</span> port);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Vòng lặp vô tận: Server không bao giờ ngủ</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// 1) Chờ Client kết nối (block)</span>
+</span></span><span style="display:flex;"><span>                Socket clientSocket <span style="color:#f92672">=</span> serverSocket.<span style="color:#a6e22e">accept</span>();
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Client mới: &#34;</span> <span style="color:#f92672">+</span> clientSocket.<span style="color:#a6e22e">getInetAddress</span>());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// 2) Tạo thread riêng để phục vụ Client này</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">new</span> ClientHandler(clientSocket).<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Phân tích kỹ thuật:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>- while(true)  -&gt; Server chạy liên tục
+</span></span><span style="display:flex;"><span>- accept()     -&gt; chờ Client (blocking)
+</span></span><span style="display:flex;"><span>- clientSocket -&gt; đại diện cho một kết nối sống (stateful)
+</span></span></code></pre></div><hr>
+<h2 id="4-thách-thức-của-mô-hình-stateful">4. Thách thức của mô hình Stateful<a hidden class="anchor" aria-hidden="true" href="#4-thách-thức-của-mô-hình-stateful">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Giữ kết nối thì mượt, nhưng Server phải trả giá:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>- Mỗi Client = 1 socket
+</span></span><span style="display:flex;"><span>- 10.000 user online = 10.000 kết nối đang mở
+</span></span><span style="display:flex;"><span>- Server sập = toàn bộ client rớt cùng lúc (cần reconnect)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Giải pháp thực tế thường dùng:
+</span></span><span style="display:flex;"><span>- Thread Pool / Event Loop
+</span></span><span style="display:flex;"><span>- Non-blocking IO (NIO)
+</span></span><span style="display:flex;"><span>- Reconnect logic
+</span></span><span style="display:flex;"><span>- Load Balancer + Message Broker
+</span></span></code></pre></div><hr>
+<h2 id="tạm-kết">Tạm kết<a hidden class="anchor" aria-hidden="true" href="#tạm-kết">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Từ HTTP “Hỏi–Đáp” (stateless), ta chuyển sang Real-Time “Hội thoại” (stateful).
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Bài tiếp theo: Khi dữ liệu chạy liên tục, nên chọn TCP hay UDP?
+</span></span></code></pre></div>
+
+      </div>
+
+      
+      <footer class="post-footer">
+        <ul class="post-tags">
+          <li>
+            <a href="http://localhost:1313/tags/java/">Java</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/networking/">Networking</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/client-server/">Client-Server</a>
+          </li>
+        </ul>
+          
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/realtime/rtc-la-gi/">
+    <span class="title">« Trang trước</span>
+    <br>
+    <span>Bài 1: Real-Time Communications là gì? Vì sao không chỉ là “chat nhanh”?</span>
+  </a>
+  <a class="next" href="http://localhost:1313/realtime/tcp-udp/">
+    <span class="title">Trang tiếp theo »</span>
+    <br>
+    <span>Bài 3: TCP và UDP: Tại sao Real-Time lại “khó tính” khi chọn giao thức?</span>
+  </a>
+</nav>
+
+      </footer>
+
+      
+
+    </article>
+  </div>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Ngọc Trinh - Blog Lập Trình Mạng</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+<script src="http://localhost:1313/js/particle-bg.js"></script>
+
+
+<div class="christmas-tree"></div>
+
+
+<script src="http://localhost:1313/js/christmas-bg.js" defer></script>
+
+
+<script>
+(function () {
+  function mountChristmasToggle() {
+    const themeBtn = document.getElementById("theme-toggle");
+    if (!themeBtn) return;
+
+     
+    if (document.getElementById("christmas-toggle")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "christmas-toggle";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "Christmas mode");
+    btn.title = "Christmas mode";
+
+     
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="18" height="18"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           aria-hidden="true">
+        <path d="M12 2 8.5 8h7L12 2Z"/>
+        <path d="M12 6 6 14h12L12 6Z"/>
+        <path d="M12 10 4 20h16L12 10Z"/>
+        <path d="M12 20v2"/>
+      </svg>
+    `;
+
+     
+    btn.className = themeBtn.className;     
+    btn.style.marginLeft = "6px";
+    btn.style.padding = "0";
+    btn.style.background = "transparent";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.display = "inline-flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+    btn.style.color = "inherit";             
+
+     
+    themeBtn.insertAdjacentElement("afterend", btn);
+
+     
+    if (localStorage.getItem("christmas") === "true") {
+      document.documentElement.classList.add("christmas");
+    }
+
+     
+    btn.addEventListener("click", () => {
+      const enabled = document.documentElement.classList.toggle("christmas");
+      localStorage.setItem("christmas", enabled ? "true" : "false");
+    });
+  }
+
+   
+  const obs = new MutationObserver(() => {
+    if (document.getElementById("theme-toggle")) {
+      mountChristmasToggle();
+      obs.disconnect();
+    }
+  });
+
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'Sao chép';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'Đã sao chép!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'Sao chép';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

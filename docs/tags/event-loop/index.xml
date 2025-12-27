@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Event Loop on Ngọc Trinh - Blog Lập Trình Mạng</title>
+    <link>http://localhost:1313/tags/event-loop/</link>
+    <description>Recent content in Event Loop on Ngọc Trinh - Blog Lập Trình Mạng</description>
+    <generator>Hugo -- 0.153.0</generator>
+    <language>vi</language>
+    <lastBuildDate>Sun, 28 Dec 2025 08:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/event-loop/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bài 8: Event Loop – Trái tim vận hành của JavaScript</title>
+      <link>http://localhost:1313/realtime/event-loop/</link>
+      <pubDate>Sun, 28 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/event-loop/</guid>
+      <description>JavaScript chỉ có một luồng xử lý, nhưng vẫn chạy Real-Time mượt mà. Bí mật nằm ở Event Loop – bộ điều phối trung tâm của toàn bộ hệ thống.</description>
+    </item>
+  </channel>
+</rss>

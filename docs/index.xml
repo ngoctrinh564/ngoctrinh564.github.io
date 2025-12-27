@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Ngọc Trinh on Ngọc Trinh - Blog Lập Trình Mạng</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content in Ngọc Trinh on Ngọc Trinh - Blog Lập Trình Mạng</description>
+    <generator>Hugo -- 0.153.0</generator>
+    <language>vi</language>
+    <lastBuildDate>Mon, 29 Dec 2025 08:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bài 1: Real-Time Communications là gì? Vì sao không chỉ là “chat nhanh”?</title>
+      <link>http://localhost:1313/realtime/rtc-la-gi/</link>
+      <pubDate>Sun, 21 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/rtc-la-gi/</guid>
+      <description>Giải mã bản chất của Real-Time: Sự dịch chuyển từ tư duy Kéo (Pull) truyền thống sang tư duy Đẩy (Push) tức thời.</description>
+    </item>
+    <item>
+      <title>Backend Developer</title>
+      <link>http://localhost:1313/roadmaps/backend-developer/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/roadmaps/backend-developer/</guid>
+      <description>Lộ trình học backend từ cơ bản đến nâng cao</description>
+    </item>
+    <item>
+      <title>REST vs GraphQL</title>
+      <link>http://localhost:1313/architecture/rest-vs-graphql/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/architecture/rest-vs-graphql/</guid>
+      <description>So sánh hai kiến trúc API phổ biến: REST và GraphQL</description>
+    </item>
+    <item>
+      <title>Bài 2: Client–Server trong Real-Time: Từ “Hỏi–Đáp” đến “Hội thoại”</title>
+      <link>http://localhost:1313/realtime/client-server/</link>
+      <pubDate>Mon, 22 Dec 2025 09:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/client-server/</guid>
+      <description>Web truyền thống giống như người mất trí nhớ (Stateless), còn Real-Time là một cuộc hội thoại dài lâu (Stateful). Cùng soi Java Socket để hiểu sự khác biệt.</description>
+    </item>
+    <item>
+      <title>Bài 3: TCP và UDP: Tại sao Real-Time lại “khó tính” khi chọn giao thức?</title>
+      <link>http://localhost:1313/realtime/tcp-udp/</link>
+      <pubDate>Tue, 23 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/tcp-udp/</guid>
+      <description>Một bên là &amp;lsquo;Mr. Hoàn Hảo&amp;rsquo; kỹ tính, một bên là &amp;lsquo;Thánh Tốc Độ&amp;rsquo; bất cần. Trong ứng dụng Real-Time, ai mới là vua?</description>
+    </item>
+    <item>
+      <title>Bài 4: Latency (Độ trễ) – Vì sao mạng mạnh mà Game vẫn Lag?</title>
+      <link>http://localhost:1313/realtime/latency/</link>
+      <pubDate>Wed, 24 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/latency/</guid>
+      <description>Phân biệt Băng thông (Bandwidth) và Độ trễ (Latency). Vì sao trong Real-Time, phản hồi nhanh quan trọng hơn tốc độ tải?</description>
+    </item>
+    <item>
+      <title>Bài 5: JavaScript: Vì sao đơn luồng (Single-thread) vẫn xử lý Real-Time tốt?</title>
+      <link>http://localhost:1313/realtime/js-single-thread/</link>
+      <pubDate>Thu, 25 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/js-single-thread/</guid>
+      <description>Nghịch lý lớn nhất của JavaScript: Làm sao một ngôn ngữ chỉ có một luồng xử lý lại phục vụ hàng ngàn kết nối Real-Time hiệu quả?</description>
+    </item>
+    <item>
+      <title>Bài 6: Event-Driven Programming: Lắng nghe thay vì chờ đợi</title>
+      <link>http://localhost:1313/realtime/event-driven/</link>
+      <pubDate>Fri, 26 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/event-driven/</guid>
+      <description>Tại sao CPU phải tốn công hỏi đi hỏi lại &amp;lsquo;Có tin nhắn chưa&amp;rsquo;? Hãy để Sự kiện (Event) đánh thức nó. Khám phá kiến trúc cốt lõi của Node.js.</description>
+    </item>
+    <item>
+      <title>Bài 7: Callback → Promise → Async/Await: Tiến hóa để xử lý dòng dữ liệu Real-Time</title>
+      <link>http://localhost:1313/realtime/async-await/</link>
+      <pubDate>Sat, 27 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/async-await/</guid>
+      <description>Hành trình lột xác của JavaScript: Từ cơn ác mộng &amp;lsquo;Callback Hell&amp;rsquo; đến sự thanh lịch của &amp;lsquo;Async/Await&amp;rsquo;. Làm chủ luồng dữ liệu là chìa khóa của ứng dụng Real-Time.</description>
+    </item>
+    <item>
+      <title>Bài 8: Event Loop – Trái tim vận hành của JavaScript</title>
+      <link>http://localhost:1313/realtime/event-loop/</link>
+      <pubDate>Sun, 28 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/event-loop/</guid>
+      <description>JavaScript chỉ có một luồng xử lý, nhưng vẫn chạy Real-Time mượt mà. Bí mật nằm ở Event Loop – bộ điều phối trung tâm của toàn bộ hệ thống.</description>
+    </item>
+    <item>
+      <title>Bài 9: HTTP vs. WebSocket – Cuộc chiến cuối cùng &amp; Lời kết</title>
+      <link>http://localhost:1313/realtime/http-vs-realtime/</link>
+      <pubDate>Mon, 29 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/http-vs-realtime/</guid>
+      <description>Khép lại hành trình Real-Time: Khi nào nên dùng HTTP truyền thống và khi nào WebSocket là lựa chọn bắt buộc? Tư duy chọn công nghệ quan trọng hơn công nghệ.</description>
+    </item>
+    <item>
+      <title>About</title>
+      <link>http://localhost:1313/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/about/</guid>
+      <description>Giới thiệu cá nhân và định hướng học tập – lập trình mạng, hệ thống và dữ liệu</description>
+    </item>
+    <item>
+      <title>CRUD API với FastAPI</title>
+      <link>http://localhost:1313/practice/fastapi-crud/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/practice/fastapi-crud/</guid>
+      <description>&lt;h2 id=&#34;1-mục-tiêu&#34;&gt;1. Mục tiêu&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Xây dựng REST API CRUD cơ bản&lt;/li&gt;
+&lt;li&gt;Hiểu cách FastAPI xử lý request / response&lt;/li&gt;
+&lt;li&gt;Nắm được routing và schema dữ liệu&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-chuẩn-bị-môi-trường&#34;&gt;2. Chuẩn bị môi trường&lt;/h2&gt;
+&lt;p&gt;Yêu cầu:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Python &amp;gt;= 3.9&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Tạo virtual environment và cài đặt FastAPI:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;python -m venv venv
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;source venv/bin/activate
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pip install fastapi uvicorn
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id=&#34;3-tạo-ứng-dụng-fastapi-cơ-bản&#34;&gt;3. Tạo ứng dụng FastAPI cơ bản&lt;/h2&gt;
+&lt;p&gt;Tạo file &lt;code&gt;main.py&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; fastapi &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; FastAPI
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;app &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; FastAPI()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;@app.get&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;root&lt;/span&gt;():
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; {&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;message&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Hello FastAPI&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Chạy server:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Đã gửi thành công</title>
+      <link>http://localhost:1313/contact/success/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/contact/success/</guid>
+      <description>&lt;h2 id=&#34;cảm-ơn&#34;&gt;Cảm ơn&lt;/h2&gt;
+&lt;p&gt;Tin nhắn đã được gửi thành công.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Python</title>
+      <link>http://localhost:1313/languages/python/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/languages/python/</guid>
+      <description>Ngôn ngữ lập trình đa dụng, phổ biến trong backend, data và AI</description>
+    </item>
+    <item>
+      <title>React</title>
+      <link>http://localhost:1313/frameworks/react/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/frameworks/react/</guid>
+      <description>Thư viện xây dựng giao diện người dùng dựa trên component</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Bài 8: Event Loop – Trái tim vận hành của JavaScript | Ngọc Trinh - Blog Lập Trình Mạng</title>
+<meta name="keywords" content="JavaScript, Event Loop, Node.js">
+<meta name="description" content="JavaScript chỉ có một luồng xử lý, nhưng vẫn chạy Real-Time mượt mà. Bí mật nằm ở Event Loop – bộ điều phối trung tâm của toàn bộ hệ thống.">
+<meta name="author" content="Ngọc Trinh">
+<link rel="canonical" href="http://localhost:1313/realtime/event-loop/">
+<link crossorigin="anonymous" href="http://localhost:1313/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css" integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/realtime/event-loop/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><link rel="stylesheet" href="http://localhost:1313/css/blog-layout.css">
+<link rel="stylesheet" href="http://localhost:1313/css/custom.css">
+<link rel="stylesheet" href="http://localhost:1313/css/christmas.css">
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Ngọc Trinh - Blog Lập Trình Mạng (Alt + H)">Ngọc Trinh - Blog Lập Trình Mạng</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blog/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/topics/" title="Topics">
+                    <span>Topics</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/roadmaps/" title="Roadmaps">
+                    <span>Roadmaps</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/contact/" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+
+
+
+  
+  
+
+  <aside style="
+    position:fixed;
+    right:28px;
+    top:120px;
+    width:320px;
+    z-index:60;
+    pointer-events:none;
+  ">
+    <div class="toc-card" style="
+      pointer-events:auto;
+      background:var(--entry);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:1.4rem 1.4rem 1.2rem;
+      box-shadow:0 18px 48px rgba(0,0,0,0.10);
+      font-size:0.86rem;
+      line-height:1.6;
+    ">
+
+      
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        font-weight:600;
+        font-size:0.9rem;
+        margin-bottom:12px;
+        padding-bottom:10px;
+        border-bottom:1px solid var(--border);
+      ">
+        <span>📑 Mục lục</span>
+
+        <button
+          aria-label="Toggle TOC"
+          onclick="
+            var toc = this.closest('.toc-card').querySelector('.toc-body');
+            if (toc.style.display === 'none') {
+              toc.style.display = '';
+              this.textContent = '−';
+            } else {
+              toc.style.display = 'none';
+              this.textContent = '+';
+            }
+          "
+          style="
+            background:none;
+            border:none;
+            cursor:pointer;
+            font-size:1.1rem;
+            font-weight:600;
+            color:var(--secondary);
+          "
+        >−</button>
+      </div>
+
+      
+      <div class="toc-body" style="max-height:calc(100vh - 260px); overflow-y:auto;">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-javascript-không-chỉ-là-ngôn-ngữ">1. JavaScript không chỉ là ngôn ngữ</a>
+      <ul>
+        <li><a href="#call-stack--nơi-code-thực-sự-chạy">Call Stack – Nơi code thực sự chạy</a></li>
+        <li><a href="#web-apis--node-apis--hậu-phương-xử-lý">Web APIs / Node APIs – Hậu phương xử lý</a></li>
+        <li><a href="#callback-queue--phòng-chờ">Callback Queue – Phòng chờ</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-event-loop-là-ai">2. Event Loop là ai?</a></li>
+    <li><a href="#3-vì-sao-settimeout0-vẫn-chạy-sau">3. Vì sao setTimeout(0) vẫn chạy sau?</a>
+      <ul>
+        <li><a href="#giải-thích-từng-bước">Giải thích từng bước</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-event-loop--asyncawait">4. Event Loop &amp; Async/Await</a></li>
+    <li><a href="#5-bài-học-sống-còn-cho-real-time">5. Bài học sống còn cho Real-Time</a>
+      <ul>
+        <li><a href="#-block-event-loop">❌ Block Event Loop</a></li>
+        <li><a href="#-luôn-giữ-stack-trống">✅ Luôn giữ Stack trống</a></li>
+      </ul>
+    </li>
+    <li><a href="#tạm-kết">Tạm kết</a></li>
+  </ul>
+</nav>
+      </div>
+
+    </div>
+  </aside>
+
+  <style>
+    #TableOfContents { font-size:0.86rem; }
+    #TableOfContents ul { list-style:none; margin:0; padding:0; }
+    #TableOfContents li { margin:6px 0; }
+
+    #TableOfContents a{
+      display:block;
+      padding:4px 8px;
+      border-radius:6px;
+      text-decoration:none;
+      color:var(--secondary);
+      transition:background .15s,color .15s;
+    }
+    #TableOfContents a:hover{
+      background:rgba(0,0,0,.04);
+      color:var(--primary);
+    }
+
+    #TableOfContents ul ul{
+      margin-top:4px;
+      padding-left:16px;
+      border-left:1px solid var(--border);
+    }
+    #TableOfContents ul ul a{ font-size:.84rem; padding-left:12px; }
+    #TableOfContents ul ul ul a{ font-size:.82rem; }
+  </style>
+
+  
+
+  
+  
+
+
+
+
+<main class="main">
+  <div class="container">
+    <article class="post-single">
+
+      
+      <header class="post-header">
+        
+
+        <h1 class="post-title">
+          Bài 8: Event Loop – Trái tim vận hành của JavaScript
+        </h1>
+        <div class="post-meta">
+          <span title='2025-12-28 08:00:00 +0700 +07'>December 28, 2025</span>&nbsp;·&nbsp;<span>3 phút</span>&nbsp;·&nbsp;<span>Ngọc Trinh</span>
+          
+          
+
+          
+
+        </div>
+      </header>
+
+      
+       
+
+      
+      <div class="post-content">
+          <p>Ở <strong>Bài 7</strong>, chúng ta đã giải quyết được vấn đề <strong>viết code bất đồng bộ cho dễ đọc</strong> bằng Async/Await.<br>
+Nhưng vẫn còn một câu hỏi nền tảng hơn:</p>
+<blockquote>
+<p>Nếu JavaScript chỉ có <strong>1 luồng duy nhất</strong>,<br>
+thì <strong>ai</strong> quyết định khi nào callback được chạy?<br>
+<strong>ai</strong> đánh thức đoạn code sau <code>await</code>?</p>
+</blockquote>
+<p>Câu trả lời nằm ở <strong>Event Loop</strong> – cơ chế cốt lõi giữ cho JavaScript không bao giờ bị treo.</p>
+<hr>
+<h2 id="1-javascript-không-chỉ-là-ngôn-ngữ">1. JavaScript không chỉ là ngôn ngữ<a hidden class="anchor" aria-hidden="true" href="#1-javascript-không-chỉ-là-ngôn-ngữ">#</a></h2>
+<p>JavaScript <strong>không tự chạy một mình</strong>.<br>
+Nó luôn chạy bên trong một <strong>Runtime</strong> (Browser hoặc Node.js).</p>
+<p><img alt="JavaScript Runtime Architecture" loading="lazy" src="http://localhost:1313/images/8/js-runtime-architecture.jpg">
+<em>Hình 1: Kiến trúc tổng thể của JavaScript Runtime</em></p>
+<p>Runtime này gồm <strong>3 thành phần chính</strong>:</p>
+<hr>
+<h3 id="call-stack--nơi-code-thực-sự-chạy">Call Stack – Nơi code thực sự chạy<a hidden class="anchor" aria-hidden="true" href="#call-stack--nơi-code-thực-sự-chạy">#</a></h3>
+<ul>
+<li>Chỉ có <strong>1 Call Stack</strong></li>
+<li>Chạy theo nguyên tắc <strong>LIFO (Vào sau – ra trước)</strong></li>
+<li>Mỗi hàm được gọi → đẩy vào Stack</li>
+<li>Chạy xong → bật ra</li>
+</ul>
+<p>👉 Nếu Stack bị kẹt → <strong>toàn bộ app đứng hình</strong></p>
+<hr>
+<h3 id="web-apis--node-apis--hậu-phương-xử-lý">Web APIs / Node APIs – Hậu phương xử lý<a hidden class="anchor" aria-hidden="true" href="#web-apis--node-apis--hậu-phương-xử-lý">#</a></h3>
+<ul>
+<li>Không thuộc JavaScript Engine</li>
+<li>Do Browser / Node.js cung cấp</li>
+<li>Xử lý:
+<ul>
+<li>Timer (<code>setTimeout</code>)</li>
+<li>Network (<code>fetch</code>, socket)</li>
+<li>I/O (File, DB)</li>
+</ul>
+</li>
+</ul>
+<p>👉 Chạy <strong>đa luồng</strong>, không block Stack</p>
+<hr>
+<h3 id="callback-queue--phòng-chờ">Callback Queue – Phòng chờ<a hidden class="anchor" aria-hidden="true" href="#callback-queue--phòng-chờ">#</a></h3>
+<ul>
+<li>Khi Web APIs xử lý xong</li>
+<li>Callback được đưa vào <strong>hàng đợi</strong></li>
+<li>Chờ đến lượt được thực thi</li>
+</ul>
+<hr>
+<h2 id="2-event-loop-là-ai">2. Event Loop là ai?<a hidden class="anchor" aria-hidden="true" href="#2-event-loop-là-ai">#</a></h2>
+<p><strong>Event Loop không chạy code nghiệp vụ.</strong><br>
+Nó chỉ làm một vòng lặp vô hạn:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>1. Call Stack có trống không?
+</span></span><span style="display:flex;"><span>2. Nếu trống → Queue có task không?
+</span></span><span style="display:flex;"><span>3. Nếu có → đưa task lên Stack
+</span></span></code></pre></div><p>Event Loop giống như <strong>người điều phối giao thông</strong>:</p>
+<ul>
+<li>Không lái xe</li>
+<li>Không sửa xe</li>
+<li>Chỉ quyết định <strong>ai được đi tiếp</strong></li>
+</ul>
+<hr>
+<h2 id="3-vì-sao-settimeout0-vẫn-chạy-sau">3. Vì sao setTimeout(0) vẫn chạy sau?<a hidden class="anchor" aria-hidden="true" href="#3-vì-sao-settimeout0-vẫn-chạy-sau">#</a></h2>
+<p>Ví dụ kinh điển:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;A&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">setTimeout</span>(() =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;B&#34;</span>);
+</span></span><span style="display:flex;"><span>}, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;C&#34;</span>);
+</span></span></code></pre></div><p>Kết quả:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>A
+</span></span><span style="display:flex;"><span>C
+</span></span><span style="display:flex;"><span>B
+</span></span></code></pre></div><p><img alt="Event Loop Flow" loading="lazy" src="http://localhost:1313/images/8/event-loop-flow.jpg">
+<em>Hình 2: Luồng di chuyển của code qua Event Loop</em></p>
+<h3 id="giải-thích-từng-bước">Giải thích từng bước<a hidden class="anchor" aria-hidden="true" href="#giải-thích-từng-bước">#</a></h3>
+<ol>
+<li>
+<p><code>console.log(&quot;A&quot;)</code><br>
+→ chạy ngay trong Call Stack</p>
+</li>
+<li>
+<p><code>setTimeout(...)</code><br>
+→ chuyển sang Web APIs<br>
+→ xong → callback vào Queue</p>
+</li>
+<li>
+<p><code>console.log(&quot;C&quot;)</code><br>
+→ tiếp tục chạy trong Stack</p>
+</li>
+<li>
+<p>Stack rỗng<br>
+→ Event Loop lấy callback từ Queue<br>
+→ in ra <code>&quot;B&quot;</code></p>
+</li>
+</ol>
+<p>👉 <code>setTimeout(0)</code> <strong>không có nghĩa là chạy ngay</strong><br>
+👉 Nó chỉ có nghĩa là <strong>được xếp hàng sớm nhất</strong></p>
+<hr>
+<h2 id="4-event-loop--asyncawait">4. Event Loop &amp; Async/Await<a hidden class="anchor" aria-hidden="true" href="#4-event-loop--asyncawait">#</a></h2>
+<p>Khi bạn viết:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> <span style="color:#a6e22e">fetchData</span>();
+</span></span></code></pre></div><p>Thực tế xảy ra:</p>
+<ol>
+<li><code>fetchData()</code> được giao cho Web APIs</li>
+<li>Call Stack <strong>được giải phóng</strong></li>
+<li>Event Loop tiếp tục xử lý việc khác</li>
+<li>Khi Promise resolve:
+<ul>
+<li>Callback vào Queue</li>
+<li>Event Loop đưa lại lên Stack</li>
+<li>Code tiếp tục chạy</li>
+</ul>
+</li>
+</ol>
+<p>👉 <code>await</code> <strong>không block</strong>
+👉 Nó chỉ <strong>tạm dừng logic</strong>, không dừng luồng</p>
+<hr>
+<h2 id="5-bài-học-sống-còn-cho-real-time">5. Bài học sống còn cho Real-Time<a hidden class="anchor" aria-hidden="true" href="#5-bài-học-sống-còn-cho-real-time">#</a></h2>
+<p>Hiểu Event Loop giúp tránh lỗi chí mạng:</p>
+<h3 id="-block-event-loop">❌ Block Event Loop<a hidden class="anchor" aria-hidden="true" href="#-block-event-loop">#</a></h3>
+<ul>
+<li>Vòng lặp nặng</li>
+<li>Xử lý CPU lớn</li>
+<li>Logic chạy lâu trên Stack</li>
+</ul>
+<h3 id="-luôn-giữ-stack-trống">✅ Luôn giữ Stack trống<a hidden class="anchor" aria-hidden="true" href="#-luôn-giữ-stack-trống">#</a></h3>
+<ul>
+<li>Dùng async I/O</li>
+<li>Đẩy việc nặng sang background</li>
+<li>Chia nhỏ tác vụ</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Event Loop khỏe → Chat mượt, Game mượt
+</span></span><span style="display:flex;"><span>Event Loop nghẽn → Lag toàn hệ thống
+</span></span></code></pre></div><hr>
+<h2 id="tạm-kết">Tạm kết<a hidden class="anchor" aria-hidden="true" href="#tạm-kết">#</a></h2>
+<p>Event Loop là <strong>trái tim của JavaScript</strong>:</p>
+<ul>
+<li>Điều phối toàn bộ bất đồng bộ</li>
+<li>Giữ ứng dụng không bao giờ treo</li>
+<li>Giúp Real-Time hoạt động mượt mà</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Async/Await = cú pháp
+</span></span><span style="display:flex;"><span>Event-Driven = tư duy
+</span></span><span style="display:flex;"><span>Event Loop = bộ điều phối trung tâm
+</span></span></code></pre></div><p>Đến đây, chúng ta đã có đủ kiến thức để trả lời câu hỏi cuối cùng:</p>
+<blockquote>
+<p>Khi nào dùng HTTP?<br>
+Khi nào bắt buộc dùng WebSocket?</p>
+</blockquote>
+
+
+      </div>
+
+      
+      <footer class="post-footer">
+        <ul class="post-tags">
+          <li>
+            <a href="http://localhost:1313/tags/javascript/">JavaScript</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/event-loop/">Event Loop</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/node.js/">Node.js</a>
+          </li>
+        </ul>
+          
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/realtime/async-await/">
+    <span class="title">« Trang trước</span>
+    <br>
+    <span>Bài 7: Callback → Promise → Async/Await: Tiến hóa để xử lý dòng dữ liệu Real-Time</span>
+  </a>
+  <a class="next" href="http://localhost:1313/realtime/http-vs-realtime/">
+    <span class="title">Trang tiếp theo »</span>
+    <br>
+    <span>Bài 9: HTTP vs. WebSocket – Cuộc chiến cuối cùng &amp; Lời kết</span>
+  </a>
+</nav>
+
+      </footer>
+
+      
+
+    </article>
+  </div>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Ngọc Trinh - Blog Lập Trình Mạng</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+<script src="http://localhost:1313/js/particle-bg.js"></script>
+
+
+<div class="christmas-tree"></div>
+
+
+<script src="http://localhost:1313/js/christmas-bg.js" defer></script>
+
+
+<script>
+(function () {
+  function mountChristmasToggle() {
+    const themeBtn = document.getElementById("theme-toggle");
+    if (!themeBtn) return;
+
+     
+    if (document.getElementById("christmas-toggle")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "christmas-toggle";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "Christmas mode");
+    btn.title = "Christmas mode";
+
+     
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="18" height="18"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           aria-hidden="true">
+        <path d="M12 2 8.5 8h7L12 2Z"/>
+        <path d="M12 6 6 14h12L12 6Z"/>
+        <path d="M12 10 4 20h16L12 10Z"/>
+        <path d="M12 20v2"/>
+      </svg>
+    `;
+
+     
+    btn.className = themeBtn.className;     
+    btn.style.marginLeft = "6px";
+    btn.style.padding = "0";
+    btn.style.background = "transparent";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.display = "inline-flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+    btn.style.color = "inherit";             
+
+     
+    themeBtn.insertAdjacentElement("afterend", btn);
+
+     
+    if (localStorage.getItem("christmas") === "true") {
+      document.documentElement.classList.add("christmas");
+    }
+
+     
+    btn.addEventListener("click", () => {
+      const enabled = document.documentElement.classList.toggle("christmas");
+      localStorage.setItem("christmas", enabled ? "true" : "false");
+    });
+  }
+
+   
+  const obs = new MutationObserver(() => {
+    if (document.getElementById("theme-toggle")) {
+      mountChristmasToggle();
+      obs.disconnect();
+    }
+  });
+
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'Sao chép';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'Đã sao chép!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'Sao chép';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

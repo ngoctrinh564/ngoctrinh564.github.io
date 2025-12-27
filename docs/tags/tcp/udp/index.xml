@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>TCP/UDP on Ngọc Trinh - Blog Lập Trình Mạng</title>
+    <link>http://localhost:1313/tags/tcp/udp/</link>
+    <description>Recent content in TCP/UDP on Ngọc Trinh - Blog Lập Trình Mạng</description>
+    <generator>Hugo -- 0.153.0</generator>
+    <language>vi</language>
+    <lastBuildDate>Tue, 23 Dec 2025 08:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/tcp/udp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bài 3: TCP và UDP: Tại sao Real-Time lại “khó tính” khi chọn giao thức?</title>
+      <link>http://localhost:1313/realtime/tcp-udp/</link>
+      <pubDate>Tue, 23 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/tcp-udp/</guid>
+      <description>Một bên là &amp;lsquo;Mr. Hoàn Hảo&amp;rsquo; kỹ tính, một bên là &amp;lsquo;Thánh Tốc Độ&amp;rsquo; bất cần. Trong ứng dụng Real-Time, ai mới là vua?</description>
+    </item>
+  </channel>
+</rss>

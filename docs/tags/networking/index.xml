@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Networking on Ngọc Trinh - Blog Lập Trình Mạng</title>
+    <link>http://localhost:1313/tags/networking/</link>
+    <description>Recent content in Networking on Ngọc Trinh - Blog Lập Trình Mạng</description>
+    <generator>Hugo -- 0.153.0</generator>
+    <language>vi</language>
+    <lastBuildDate>Wed, 24 Dec 2025 08:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/networking/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bài 1: Real-Time Communications là gì? Vì sao không chỉ là “chat nhanh”?</title>
+      <link>http://localhost:1313/realtime/rtc-la-gi/</link>
+      <pubDate>Sun, 21 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/rtc-la-gi/</guid>
+      <description>Giải mã bản chất của Real-Time: Sự dịch chuyển từ tư duy Kéo (Pull) truyền thống sang tư duy Đẩy (Push) tức thời.</description>
+    </item>
+    <item>
+      <title>Bài 2: Client–Server trong Real-Time: Từ “Hỏi–Đáp” đến “Hội thoại”</title>
+      <link>http://localhost:1313/realtime/client-server/</link>
+      <pubDate>Mon, 22 Dec 2025 09:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/client-server/</guid>
+      <description>Web truyền thống giống như người mất trí nhớ (Stateless), còn Real-Time là một cuộc hội thoại dài lâu (Stateful). Cùng soi Java Socket để hiểu sự khác biệt.</description>
+    </item>
+    <item>
+      <title>Bài 3: TCP và UDP: Tại sao Real-Time lại “khó tính” khi chọn giao thức?</title>
+      <link>http://localhost:1313/realtime/tcp-udp/</link>
+      <pubDate>Tue, 23 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/tcp-udp/</guid>
+      <description>Một bên là &amp;lsquo;Mr. Hoàn Hảo&amp;rsquo; kỹ tính, một bên là &amp;lsquo;Thánh Tốc Độ&amp;rsquo; bất cần. Trong ứng dụng Real-Time, ai mới là vua?</description>
+    </item>
+    <item>
+      <title>Bài 4: Latency (Độ trễ) – Vì sao mạng mạnh mà Game vẫn Lag?</title>
+      <link>http://localhost:1313/realtime/latency/</link>
+      <pubDate>Wed, 24 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/latency/</guid>
+      <description>Phân biệt Băng thông (Bandwidth) và Độ trễ (Latency). Vì sao trong Real-Time, phản hồi nhanh quan trọng hơn tốc độ tải?</description>
+    </item>
+  </channel>
+</rss>

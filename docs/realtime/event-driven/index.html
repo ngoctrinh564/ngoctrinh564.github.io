@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Bài 6: Event-Driven Programming: Lắng nghe thay vì chờ đợi | Ngọc Trinh - Blog Lập Trình Mạng</title>
+<meta name="keywords" content="JavaScript, Architecture, Event-Driven">
+<meta name="description" content="Tại sao CPU phải tốn công hỏi đi hỏi lại &lsquo;Có tin nhắn chưa&rsquo;? Hãy để Sự kiện (Event) đánh thức nó. Khám phá kiến trúc cốt lõi của Node.js.">
+<meta name="author" content="Ngọc Trinh">
+<link rel="canonical" href="http://localhost:1313/realtime/event-driven/">
+<link crossorigin="anonymous" href="http://localhost:1313/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css" integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/realtime/event-driven/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><link rel="stylesheet" href="http://localhost:1313/css/blog-layout.css">
+<link rel="stylesheet" href="http://localhost:1313/css/custom.css">
+<link rel="stylesheet" href="http://localhost:1313/css/christmas.css">
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Ngọc Trinh - Blog Lập Trình Mạng (Alt + H)">Ngọc Trinh - Blog Lập Trình Mạng</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blog/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/topics/" title="Topics">
+                    <span>Topics</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/roadmaps/" title="Roadmaps">
+                    <span>Roadmaps</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/contact/" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+
+
+
+  
+  
+
+  <aside style="
+    position:fixed;
+    right:28px;
+    top:120px;
+    width:320px;
+    z-index:60;
+    pointer-events:none;
+  ">
+    <div class="toc-card" style="
+      pointer-events:auto;
+      background:var(--entry);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:1.4rem 1.4rem 1.2rem;
+      box-shadow:0 18px 48px rgba(0,0,0,0.10);
+      font-size:0.86rem;
+      line-height:1.6;
+    ">
+
+      
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        font-weight:600;
+        font-size:0.9rem;
+        margin-bottom:12px;
+        padding-bottom:10px;
+        border-bottom:1px solid var(--border);
+      ">
+        <span>📑 Mục lục</span>
+
+        <button
+          aria-label="Toggle TOC"
+          onclick="
+            var toc = this.closest('.toc-card').querySelector('.toc-body');
+            if (toc.style.display === 'none') {
+              toc.style.display = '';
+              this.textContent = '−';
+            } else {
+              toc.style.display = 'none';
+              this.textContent = '+';
+            }
+          "
+          style="
+            background:none;
+            border:none;
+            cursor:pointer;
+            font-size:1.1rem;
+            font-weight:600;
+            color:var(--secondary);
+          "
+        >−</button>
+      </div>
+
+      
+      <div class="toc-body" style="max-height:calc(100vh - 260px); overflow-y:auto;">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-polling-vs-event-driven--hai-tư-duy-đối-lập">1. Polling vs. Event-Driven – Hai tư duy đối lập</a>
+      <ul>
+        <li><a href="#polling--vòng-lặp-hỏi-liên-tục-busy-waiting">Polling – Vòng lặp hỏi liên tục (Busy Waiting)</a></li>
+        <li><a href="#event-driven--đánh-thức-bằng-sự-kiện">Event-Driven – Đánh thức bằng sự kiện</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-giải-phẫu-một-sự-kiện-anatomy-of-an-event">2. Giải phẫu một Sự kiện (Anatomy of an Event)</a>
+      <ul>
+        <li><a href="#1-event-emitter--nguồn-phát">1. Event Emitter – Nguồn phát</a></li>
+        <li><a href="#2-event--tên-sự-kiện">2. Event – Tên sự kiện</a></li>
+        <li><a href="#3-event-handler--hàm-xử-lý">3. Event Handler – Hàm xử lý</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-ví-dụ-thực-tế--socketio-trong-chat-app">3. Ví dụ thực tế – Socket.io trong Chat App</a></li>
+    <li><a href="#4-vì-sao-real-time-bắt-buộc-event-driven">4. Vì sao Real-Time bắt buộc Event-Driven?</a></li>
+    <li><a href="#tạm-kết">Tạm kết</a></li>
+  </ul>
+</nav>
+      </div>
+
+    </div>
+  </aside>
+
+  <style>
+    #TableOfContents { font-size:0.86rem; }
+    #TableOfContents ul { list-style:none; margin:0; padding:0; }
+    #TableOfContents li { margin:6px 0; }
+
+    #TableOfContents a{
+      display:block;
+      padding:4px 8px;
+      border-radius:6px;
+      text-decoration:none;
+      color:var(--secondary);
+      transition:background .15s,color .15s;
+    }
+    #TableOfContents a:hover{
+      background:rgba(0,0,0,.04);
+      color:var(--primary);
+    }
+
+    #TableOfContents ul ul{
+      margin-top:4px;
+      padding-left:16px;
+      border-left:1px solid var(--border);
+    }
+    #TableOfContents ul ul a{ font-size:.84rem; padding-left:12px; }
+    #TableOfContents ul ul ul a{ font-size:.82rem; }
+  </style>
+
+  
+
+  
+  
+
+
+
+
+<main class="main">
+  <div class="container">
+    <article class="post-single">
+
+      
+      <header class="post-header">
+        
+
+        <h1 class="post-title">
+          Bài 6: Event-Driven Programming: Lắng nghe thay vì chờ đợi
+        </h1>
+        <div class="post-meta">
+          <span title='2025-12-26 08:00:00 +0700 +07'>December 26, 2025</span>&nbsp;·&nbsp;<span>3 phút</span>&nbsp;·&nbsp;<span>Ngọc Trinh</span>
+          
+          
+
+          
+
+        </div>
+      </header>
+
+      
+       
+
+      
+      <div class="post-content">
+          <p>Ở <strong>Bài 5</strong>, chúng ta đã thấy JavaScript xử lý Real-Time hiệu quả nhờ <strong>Non-blocking I/O</strong>.<br>
+Nhưng một câu hỏi quan trọng vẫn còn bỏ ngỏ:</p>
+<blockquote>
+<p>Nếu chương trình <strong>không đứng chờ</strong>, làm sao nó biết <strong>khi nào công việc hoàn thành</strong> để quay lại xử lý?</p>
+</blockquote>
+<p>Câu trả lời nằm ở kiến trúc cốt lõi của Node.js và nhiều hệ thống hiện đại:<br>
+<strong>Event-Driven Programming (Lập trình hướng sự kiện).</strong></p>
+<hr>
+<h2 id="1-polling-vs-event-driven--hai-tư-duy-đối-lập">1. Polling vs. Event-Driven – Hai tư duy đối lập<a hidden class="anchor" aria-hidden="true" href="#1-polling-vs-event-driven--hai-tư-duy-đối-lập">#</a></h2>
+<p><img alt="Polling vs Event-Driven Diagram" loading="lazy" src="http://localhost:1313/images/6/polling-vs-event-driven-diagram.jpg">
+<em>Hình 1: Polling lãng phí CPU, Event-Driven chỉ hoạt động khi có việc</em></p>
+<hr>
+<h3 id="polling--vòng-lặp-hỏi-liên-tục-busy-waiting">Polling – Vòng lặp hỏi liên tục (Busy Waiting)<a hidden class="anchor" aria-hidden="true" href="#polling--vòng-lặp-hỏi-liên-tục-busy-waiting">#</a></h3>
+<p>Trong lập trình truyền thống, để kiểm tra dữ liệu mới, ta thường thấy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>while (true) {
+</span></span><span style="display:flex;"><span>    checkSomething();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Cách hoạt động:</p>
+<ul>
+<li>CPU liên tục hỏi: “Có dữ liệu chưa?”</li>
+<li>Dù <strong>không có gì xảy ra</strong>, CPU vẫn chạy</li>
+</ul>
+<p>Hệ quả:</p>
+<ul>
+<li>CPU luôn ở trạng thái 100%</li>
+<li>Lãng phí tài nguyên</li>
+<li>Không phù hợp hệ thống Real-Time lớn</li>
+</ul>
+<hr>
+<h3 id="event-driven--đánh-thức-bằng-sự-kiện">Event-Driven – Đánh thức bằng sự kiện<a hidden class="anchor" aria-hidden="true" href="#event-driven--đánh-thức-bằng-sự-kiện">#</a></h3>
+<p>Event-Driven đảo ngược hoàn toàn tư duy:</p>
+<ul>
+<li>Chương trình <strong>đăng ký lắng nghe</strong></li>
+<li>CPU <strong>ngủ (idle)</strong> khi không có việc</li>
+<li>Khi có sự kiện → hệ thống <strong>đánh thức</strong> CPU xử lý</li>
+</ul>
+<p>Nguyên lý nổi tiếng:</p>
+<blockquote>
+<p><strong>Don’t call us, we’ll call you.</strong><br>
+(Đừng gọi cho chúng tôi – khi cần, chúng tôi sẽ gọi bạn)</p>
+</blockquote>
+<hr>
+<h2 id="2-giải-phẫu-một-sự-kiện-anatomy-of-an-event">2. Giải phẫu một Sự kiện (Anatomy of an Event)<a hidden class="anchor" aria-hidden="true" href="#2-giải-phẫu-một-sự-kiện-anatomy-of-an-event">#</a></h2>
+<p><img alt="Event Architecture" loading="lazy" src="http://localhost:1313/images/6/event-architecture.jpg">
+<em>Hình 2: Luồng xử lý của một sự kiện trong hệ thống Event-Driven</em></p>
+<p>Một sự kiện luôn gồm <strong>3 thành phần rõ ràng</strong>:</p>
+<h3 id="1-event-emitter--nguồn-phát">1. Event Emitter – Nguồn phát<a hidden class="anchor" aria-hidden="true" href="#1-event-emitter--nguồn-phát">#</a></h3>
+<ul>
+<li>Đối tượng theo dõi trạng thái</li>
+<li>Ví dụ:
+<ul>
+<li><code>Socket</code> (có dữ liệu đến)</li>
+<li><code>HTTP Server</code> (có request)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="2-event--tên-sự-kiện">2. Event – Tên sự kiện<a hidden class="anchor" aria-hidden="true" href="#2-event--tên-sự-kiện">#</a></h3>
+<ul>
+<li>Một định danh (string)</li>
+<li>Ví dụ:
+<ul>
+<li><code>&quot;message&quot;</code></li>
+<li><code>&quot;connect&quot;</code></li>
+<li><code>&quot;error&quot;</code></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-event-handler--hàm-xử-lý">3. Event Handler – Hàm xử lý<a hidden class="anchor" aria-hidden="true" href="#3-event-handler--hàm-xử-lý">#</a></h3>
+<ul>
+<li>Callback function</li>
+<li><strong>Chỉ chạy khi sự kiện xảy ra</strong></li>
+<li>Không block luồng chính</li>
+</ul>
+<hr>
+<h2 id="3-ví-dụ-thực-tế--socketio-trong-chat-app">3. Ví dụ thực tế – Socket.io trong Chat App<a hidden class="anchor" aria-hidden="true" href="#3-ví-dụ-thực-tế--socketio-trong-chat-app">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// 1. EVENT EMITTER: socket
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;chat-message&#39;</span>, (<span style="color:#a6e22e">msg</span>) =&gt; {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 2. EVENT: &#39;chat-message&#39;
+</span></span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 3. EVENT HANDLER: chỉ chạy khi có tin nhắn
+</span></span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Đã nhận tin nhắn:&#34;</span>, <span style="color:#a6e22e">msg</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">saveToDatabase</span>(<span style="color:#a6e22e">msg</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Dòng này chạy ngay lập tức
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Server đang lắng nghe...&#34;</span>);
+</span></span></code></pre></div><p>Phân tích:</p>
+<ul>
+<li>Server <strong>không đứng chờ</strong> tin nhắn</li>
+<li>Khi có message → callback được kích hoạt</li>
+<li>CPU chỉ làm việc <strong>khi cần thiết</strong></li>
+</ul>
+<hr>
+<h2 id="4-vì-sao-real-time-bắt-buộc-event-driven">4. Vì sao Real-Time bắt buộc Event-Driven?<a hidden class="anchor" aria-hidden="true" href="#4-vì-sao-real-time-bắt-buộc-event-driven">#</a></h2>
+<p>Đặc thù Real-Time:</p>
+<ul>
+<li>Sự kiện xảy ra <strong>ngẫu nhiên</strong></li>
+<li>Có thể <strong>dồn dập (burst traffic)</strong></li>
+<li>Không thể đoán trước thời điểm</li>
+</ul>
+<p>So sánh:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Polling:
+</span></span><span style="display:flex;"><span>- Hỏi mỗi 1 giây
+</span></span><span style="display:flex;"><span>- Trễ tối đa 1 giây
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Event-Driven:
+</span></span><span style="display:flex;"><span>- Sự kiện xảy ra → xử lý ngay
+</span></span><span style="display:flex;"><span>- Độ trễ gần như 0
+</span></span></code></pre></div><p>Ứng dụng bắt buộc Event-Driven:</p>
+<ul>
+<li>Chat</li>
+<li>Game Online</li>
+<li>Sàn chứng khoán</li>
+<li>Notification System</li>
+</ul>
+<hr>
+<h2 id="tạm-kết">Tạm kết<a hidden class="anchor" aria-hidden="true" href="#tạm-kết">#</a></h2>
+<p>Event-Driven Programming là <strong>trái tim của Node.js</strong>:</p>
+<ul>
+<li>CPU không bị lãng phí</li>
+<li>Xử lý hàng triệu kết nối</li>
+<li>Phản hồi tức thì khi có sự kiện</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Polling  = hỏi liên tục
+</span></span><span style="display:flex;"><span>Event    = lắng nghe và phản hồi
+</span></span></code></pre></div><p>Tuy nhiên, Event-Driven cũng sinh ra một vấn đề lớn:</p>
+<ul>
+<li>Sự kiện gọi sự kiện</li>
+<li>Callback lồng callback</li>
+<li>Code rối như mê cung</li>
+</ul>
+<p>Đó là <strong>Callback Hell</strong>.</p>
+
+
+      </div>
+
+      
+      <footer class="post-footer">
+        <ul class="post-tags">
+          <li>
+            <a href="http://localhost:1313/tags/javascript/">JavaScript</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/architecture/">Architecture</a>
+          </li>
+          <li>
+            <a href="http://localhost:1313/tags/event-driven/">Event-Driven</a>
+          </li>
+        </ul>
+          
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/realtime/js-single-thread/">
+    <span class="title">« Trang trước</span>
+    <br>
+    <span>Bài 5: JavaScript: Vì sao đơn luồng (Single-thread) vẫn xử lý Real-Time tốt?</span>
+  </a>
+  <a class="next" href="http://localhost:1313/realtime/async-await/">
+    <span class="title">Trang tiếp theo »</span>
+    <br>
+    <span>Bài 7: Callback → Promise → Async/Await: Tiến hóa để xử lý dòng dữ liệu Real-Time</span>
+  </a>
+</nav>
+
+      </footer>
+
+      
+
+    </article>
+  </div>
+</main>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Ngọc Trinh - Blog Lập Trình Mạng</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+<script src="http://localhost:1313/js/particle-bg.js"></script>
+
+
+<div class="christmas-tree"></div>
+
+
+<script src="http://localhost:1313/js/christmas-bg.js" defer></script>
+
+
+<script>
+(function () {
+  function mountChristmasToggle() {
+    const themeBtn = document.getElementById("theme-toggle");
+    if (!themeBtn) return;
+
+     
+    if (document.getElementById("christmas-toggle")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "christmas-toggle";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "Christmas mode");
+    btn.title = "Christmas mode";
+
+     
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="18" height="18"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           aria-hidden="true">
+        <path d="M12 2 8.5 8h7L12 2Z"/>
+        <path d="M12 6 6 14h12L12 6Z"/>
+        <path d="M12 10 4 20h16L12 10Z"/>
+        <path d="M12 20v2"/>
+      </svg>
+    `;
+
+     
+    btn.className = themeBtn.className;     
+    btn.style.marginLeft = "6px";
+    btn.style.padding = "0";
+    btn.style.background = "transparent";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.display = "inline-flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+    btn.style.color = "inherit";             
+
+     
+    themeBtn.insertAdjacentElement("afterend", btn);
+
+     
+    if (localStorage.getItem("christmas") === "true") {
+      document.documentElement.classList.add("christmas");
+    }
+
+     
+    btn.addEventListener("click", () => {
+      const enabled = document.documentElement.classList.toggle("christmas");
+      localStorage.setItem("christmas", enabled ? "true" : "false");
+    });
+  }
+
+   
+  const obs = new MutationObserver(() => {
+    if (document.getElementById("theme-toggle")) {
+      mountChristmasToggle();
+      obs.disconnect();
+    }
+  });
+
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'Sao chép';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'Đã sao chép!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'Sao chép';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

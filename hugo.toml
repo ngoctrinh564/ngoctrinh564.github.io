@@ -1,0 +1,66 @@
+baseURL = "https://ngoctrinh564.github.io/"
+languageCode = "vi"
+title = "Ngọc Trinh - Blog Lập Trình Mạng"
+theme = "PaperMod"
+
+publishDir = "docs"
+
+relativeURLs = false
+canonifyURLs = true
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+
+[params]
+  ShowReadingTime = true
+  ShowCodeCopyButtons = true
+  ShowBreadCrumbs = false
+  ShowPostNavLinks = true
+  ShowShareButtons = false
+  ShowToc = true
+  TocOpen = true
+  TocSide = "right"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[menu]
+
+  [[menu.main]]
+    identifier = "home"
+    name = "Home"
+    url = "/"
+    weight = 1
+
+  [[menu.main]]
+    identifier = "blog"
+    name = "Blog"
+    url = "/blog/"
+    weight = 2
+
+  [[menu.main]]
+    identifier = "topics"
+    name = "Topics"
+    url = "/topics/"
+    weight = 3
+
+  [[menu.main]]
+    identifier = "roadmaps"
+    name = "Roadmaps"
+    url = "/roadmaps/"
+    weight = 4
+
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 5
+
+  [[menu.main]]
+    identifier = "contact"
+    name = "Contact"
+    url = "/contact/"
+    weight = 6

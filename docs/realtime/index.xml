@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Realtime on Ngọc Trinh - Blog Lập Trình Mạng</title>
+    <link>http://localhost:1313/realtime/</link>
+    <description>Recent content in Realtime on Ngọc Trinh - Blog Lập Trình Mạng</description>
+    <generator>Hugo -- 0.153.0</generator>
+    <language>vi</language>
+    <lastBuildDate>Mon, 29 Dec 2025 08:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/realtime/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bài 1: Real-Time Communications là gì? Vì sao không chỉ là “chat nhanh”?</title>
+      <link>http://localhost:1313/realtime/rtc-la-gi/</link>
+      <pubDate>Sun, 21 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/rtc-la-gi/</guid>
+      <description>Giải mã bản chất của Real-Time: Sự dịch chuyển từ tư duy Kéo (Pull) truyền thống sang tư duy Đẩy (Push) tức thời.</description>
+    </item>
+    <item>
+      <title>Bài 2: Client–Server trong Real-Time: Từ “Hỏi–Đáp” đến “Hội thoại”</title>
+      <link>http://localhost:1313/realtime/client-server/</link>
+      <pubDate>Mon, 22 Dec 2025 09:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/client-server/</guid>
+      <description>Web truyền thống giống như người mất trí nhớ (Stateless), còn Real-Time là một cuộc hội thoại dài lâu (Stateful). Cùng soi Java Socket để hiểu sự khác biệt.</description>
+    </item>
+    <item>
+      <title>Bài 3: TCP và UDP: Tại sao Real-Time lại “khó tính” khi chọn giao thức?</title>
+      <link>http://localhost:1313/realtime/tcp-udp/</link>
+      <pubDate>Tue, 23 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/tcp-udp/</guid>
+      <description>Một bên là &amp;lsquo;Mr. Hoàn Hảo&amp;rsquo; kỹ tính, một bên là &amp;lsquo;Thánh Tốc Độ&amp;rsquo; bất cần. Trong ứng dụng Real-Time, ai mới là vua?</description>
+    </item>
+    <item>
+      <title>Bài 4: Latency (Độ trễ) – Vì sao mạng mạnh mà Game vẫn Lag?</title>
+      <link>http://localhost:1313/realtime/latency/</link>
+      <pubDate>Wed, 24 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/latency/</guid>
+      <description>Phân biệt Băng thông (Bandwidth) và Độ trễ (Latency). Vì sao trong Real-Time, phản hồi nhanh quan trọng hơn tốc độ tải?</description>
+    </item>
+    <item>
+      <title>Bài 5: JavaScript: Vì sao đơn luồng (Single-thread) vẫn xử lý Real-Time tốt?</title>
+      <link>http://localhost:1313/realtime/js-single-thread/</link>
+      <pubDate>Thu, 25 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/js-single-thread/</guid>
+      <description>Nghịch lý lớn nhất của JavaScript: Làm sao một ngôn ngữ chỉ có một luồng xử lý lại phục vụ hàng ngàn kết nối Real-Time hiệu quả?</description>
+    </item>
+    <item>
+      <title>Bài 6: Event-Driven Programming: Lắng nghe thay vì chờ đợi</title>
+      <link>http://localhost:1313/realtime/event-driven/</link>
+      <pubDate>Fri, 26 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/event-driven/</guid>
+      <description>Tại sao CPU phải tốn công hỏi đi hỏi lại &amp;lsquo;Có tin nhắn chưa&amp;rsquo;? Hãy để Sự kiện (Event) đánh thức nó. Khám phá kiến trúc cốt lõi của Node.js.</description>
+    </item>
+    <item>
+      <title>Bài 7: Callback → Promise → Async/Await: Tiến hóa để xử lý dòng dữ liệu Real-Time</title>
+      <link>http://localhost:1313/realtime/async-await/</link>
+      <pubDate>Sat, 27 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/async-await/</guid>
+      <description>Hành trình lột xác của JavaScript: Từ cơn ác mộng &amp;lsquo;Callback Hell&amp;rsquo; đến sự thanh lịch của &amp;lsquo;Async/Await&amp;rsquo;. Làm chủ luồng dữ liệu là chìa khóa của ứng dụng Real-Time.</description>
+    </item>
+    <item>
+      <title>Bài 8: Event Loop – Trái tim vận hành của JavaScript</title>
+      <link>http://localhost:1313/realtime/event-loop/</link>
+      <pubDate>Sun, 28 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/event-loop/</guid>
+      <description>JavaScript chỉ có một luồng xử lý, nhưng vẫn chạy Real-Time mượt mà. Bí mật nằm ở Event Loop – bộ điều phối trung tâm của toàn bộ hệ thống.</description>
+    </item>
+    <item>
+      <title>Bài 9: HTTP vs. WebSocket – Cuộc chiến cuối cùng &amp; Lời kết</title>
+      <link>http://localhost:1313/realtime/http-vs-realtime/</link>
+      <pubDate>Mon, 29 Dec 2025 08:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/http-vs-realtime/</guid>
+      <description>Khép lại hành trình Real-Time: Khi nào nên dùng HTTP truyền thống và khi nào WebSocket là lựa chọn bắt buộc? Tư duy chọn công nghệ quan trọng hơn công nghệ.</description>
+    </item>
+  </channel>
+</rss>

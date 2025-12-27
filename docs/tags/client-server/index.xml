@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Client-Server on Ngọc Trinh - Blog Lập Trình Mạng</title>
+    <link>http://localhost:1313/tags/client-server/</link>
+    <description>Recent content in Client-Server on Ngọc Trinh - Blog Lập Trình Mạng</description>
+    <generator>Hugo -- 0.153.0</generator>
+    <language>vi</language>
+    <lastBuildDate>Mon, 22 Dec 2025 09:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/client-server/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bài 2: Client–Server trong Real-Time: Từ “Hỏi–Đáp” đến “Hội thoại”</title>
+      <link>http://localhost:1313/realtime/client-server/</link>
+      <pubDate>Mon, 22 Dec 2025 09:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/realtime/client-server/</guid>
+      <description>Web truyền thống giống như người mất trí nhớ (Stateless), còn Real-Time là một cuộc hội thoại dài lâu (Stateful). Cùng soi Java Socket để hiểu sự khác biệt.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,39 @@
+/* ==== HARD RESET OPACITY BUG ==== */
+body,
+main,
+#content,
+.page,
+.post,
+.post-content {
+  opacity: 1 !important;
+  filter: none !important;
+}
+/* ==== PARTICLE BACKGROUND FINAL FIX ==== */
+#particle-bg {
+    opacity: 1 !important;
+    background: transparent !important;
+}
+/* ==== TEXT CONTRAST FIX ==== */
+body {
+  --content: rgb(20, 20, 20);        /* light: đen rõ hơn */
+}
+
+:root[data-theme="dark"] body {
+  --content: rgb(230, 230, 230);     /* dark: trắng rõ hơn */
+}
+/* ==== REMOVE GRAY LIST BACKGROUND ==== */
+.list {
+  background: var(--theme);
+}
+body {
+    position: relative;
+}
+
+#particle-bg {
+    z-index: 0;
+}
+
+main, #content, .page {
+    position: relative;
+    z-index: 1;
+}
