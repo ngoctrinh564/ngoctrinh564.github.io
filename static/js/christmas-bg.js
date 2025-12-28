@@ -27,7 +27,7 @@
 
     /* ===== LOAD SNOWFLAKE IMAGE ===== */
     const snowImg = new Image();
-    snowImg.src = "/images/hoa-tuyet.png";
+    snowImg.src = "/images/backgroundChristmas/hoa-tuyet.png";
 
     /* ===== PARTICLES ===== */
     const DOT_COUNT = 110;

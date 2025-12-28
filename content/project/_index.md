@@ -4,7 +4,384 @@ description: "Các project đã thực hiện và các web demo thú vị"
 ---
 
 ## A. Project
-(Chưa có dữ liệu)
+
+<style>
+/* ===== Featured Project (A) ===== */
+.pa-wrap{ margin-top:24px; }
+
+/* Card A: 1 cột (không dùng grid 2 cột) */
+.pa-card{
+  background:var(--entry);
+  border-radius:18px;
+  box-shadow:0 14px 40px rgba(0,0,0,.08);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+/* Ảnh chính */
+.pa-main{
+  width:100%;
+  aspect-ratio:16 / 9;
+  overflow:hidden;
+  background:#000;
+}
+.pa-main img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  cursor:zoom-in;
+  display:block;
+}
+
+/* Slider ảnh phụ (15 ảnh) */
+.pa-slider{ padding:14px; }
+.pa-track{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+}
+.pa-track::-webkit-scrollbar{ height:6px; }
+.pa-track::-webkit-scrollbar-thumb{
+  background:rgba(0,0,0,.25);
+  border-radius:6px;
+}
+.pa-thumb{
+  flex:0 0 160px;
+  aspect-ratio:16 / 9;
+  scroll-snap-align:start;
+  border-radius:10px;
+  overflow:hidden;
+  background:#000;
+}
+.pa-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  cursor:zoom-in;
+  display:block;
+}
+
+/* Nội dung */
+.pa-body{ padding:18px; }
+.pa-title{
+  font-size:1.25rem;
+  font-weight:800;
+  margin:0 0 8px 0;
+  cursor:pointer;
+}
+.pa-desc{
+  margin:0;
+  color:var(--secondary);
+  line-height:1.6;
+  cursor:pointer;
+}
+.pa-meta{
+  margin-top:12px;
+  font-size:.9rem;
+  color:var(--secondary);
+}
+
+/* Action */
+.pa-action{
+  padding:16px 18px;
+  border-top:1px solid rgba(0,0,0,.06);
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+}
+.pa-btn{
+  padding:10px 18px;
+  border-radius:12px;
+  background:var(--primary);
+  color:#fff;
+  font-size:.9rem;
+  text-decoration:none;
+  border:0;
+  cursor:pointer;
+}
+.pa-btn.secondary{
+  background:transparent;
+  border:1px solid rgba(0,0,0,.18);
+  color:inherit;
+}
+.pa-btn:hover{ opacity:.88; }
+
+/* ===== Modal ===== */
+.pa-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:10000;
+}
+.pa-modal.open{ display:flex; }
+.pa-modal-box{
+  background:var(--entry);
+  max-width:960px;
+  width:94vw;
+  max-height:90vh;
+  overflow:auto;
+  border-radius:18px;
+  padding:28px;
+}
+.pa-close{
+  position:sticky;
+  top:0;
+  float:right;
+  border:0;
+  background:none;
+  font-size:22px;
+  cursor:pointer;
+}
+.pa-section{ margin-top:22px; }
+.pa-section h3{ margin-bottom:10px; }
+.pa-badges{ display:flex; flex-wrap:wrap; gap:8px; }
+.pa-badge{
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(0,0,0,.06);
+  font-size:.8rem;
+}
+</style>
+
+<!-- ===== Modal: Project Detail ===== -->
+<div class="pa-modal" id="pa-modal">
+  <div class="pa-modal-box">
+    <button class="pa-close" onclick="closeProjectModal()">✕</button>
+
+  <h2>🚗 Driving License Training System</h2>
+  <p>
+    Ứng dụng web quản lý đào tạo giấy phép lái xe (GPLX) xây dựng trên nền tảng
+    <strong>ASP.NET Core MVC</strong>, hỗ trợ toàn bộ vòng đời học viên:
+    đăng ký, học tập, thi cử, cấp chứng chỉ và theo dõi tài chính.
+  </p>
+
+  <div class="pa-section">
+    <h3>✨ Chức năng chính</h3>
+    <ul>
+      <li>Quản lý học viên, khóa học, hạng GPLX</li>
+      <li>Quản lý kỳ thi lý thuyết & thực hành</li>
+      <li>Dashboard quản trị, xuất báo cáo PDF</li>
+      <li>Gửi email thông báo qua SMTP</li>
+      <li>Xác thực ảnh chân dung bằng OpenCV</li>
+      <li>Cookie-based authentication & phân quyền</li>
+    </ul>
+  </div>
+
+  <div class="pa-section">
+    <h3>🧰 Công nghệ sử dụng</h3>
+    <div class="pa-badges">
+      <span class="pa-badge">ASP.NET Core MVC</span>
+      <span class="pa-badge">Entity Framework Core</span>
+      <span class="pa-badge">SQL Server</span>
+      <span class="pa-badge">OpenCvSharp</span>
+      <span class="pa-badge">QuestPDF</span>
+      <span class="pa-badge">Bootstrap</span>
+    </div>
+  </div>
+
+  <div class="pa-section">
+    <a class="pa-btn"
+        href="https://github.com/ngoctrinh564/driving-license-training-system"
+        target="_blank" rel="noopener">
+      View Repository
+    </a>
+  </div>
+  </div>
+</div>
+
+<div class="pa-modal" id="pa-gym-modal">
+  <div class="pa-modal-box">
+    <button class="pa-close" onclick="closeGymModal()">✕</button>
+
+  <h2>🎯 Gym Management Web Application</h2>
+  <p>
+    Hệ thống quản lý phòng gym xây dựng trên nền tảng <strong>ASP.NET Core MVC</strong>,
+    hỗ trợ quản lý hội viên, gói tập, thanh toán, thông báo và chatbot tư vấn tự động.
+  </p>
+
+  <div class="pa-section">
+    <h3>✨ Chức năng chính</h3>
+    <ul>
+      <li>Quản lý tài khoản người dùng (Admin, Member, Staff, Trainer)</li>
+      <li>Quản lý hội viên và gói tập (CRUD, theo dõi hạn sử dụng)</li>
+      <li>Tích hợp thanh toán PayPal & VNPay</li>
+      <li>Gửi thông báo và lưu lịch sử thông báo</li>
+      <li>Gửi phản hồi và quản lý feedback</li>
+      <li>Chatbot tư vấn gói tập tích hợp OpenAI</li>
+    </ul>
+  </div>
+
+  <div class="pa-section">
+    <h3>🧰 Công nghệ sử dụng</h3>
+    <div class="pa-badges">
+      <span class="pa-badge">ASP.NET Core MVC</span>
+      <span class="pa-badge">Entity Framework Core</span>
+      <span class="pa-badge">SQL Server</span>
+      <span class="pa-badge">PayPal</span>
+      <span class="pa-badge">VNPay</span>
+      <span class="pa-badge">OpenAI API</span>
+    </div>
+  </div>
+
+  <div class="pa-section">
+    <a class="pa-btn"
+        href="https://github.com/ngoctrinh564/courseproject-ltweb-gym"
+        target="_blank" rel="noopener">
+      View Repository
+    </a>
+  </div>
+  </div>
+</div>
+
+<script>
+function openGymModal(){
+  document.getElementById("pa-gym-modal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeGymModal(){
+  document.getElementById("pa-gym-modal").classList.remove("open");
+  document.body.style.overflow = "";
+}
+</script>
+
+
+<script>
+function openProjectModal(){
+  document.getElementById("pa-modal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeProjectModal(){
+  document.getElementById("pa-modal").classList.remove("open");
+  document.body.style.overflow = "";
+}
+</script>
+
+<div class="pa-wrap">
+  <div class="pa-card">
+
+  <!-- Ảnh chính -->
+  <div class="pa-main">
+    <img class="iw-zoom"
+          src="/images/project/gplx/main.png"
+          alt="Driving License Training System">
+  </div>
+
+  <!-- 15 ảnh phụ -->
+  <div class="pa-slider">
+    <div class="pa-track">
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/1.png"  alt="GPLX 1"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/2.png"  alt="GPLX 2"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/3.png"  alt="GPLX 3"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/4.png"  alt="GPLX 4"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/5.png"  alt="GPLX 5"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/6.png"  alt="GPLX 6"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/7.png"  alt="GPLX 7"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/8.png"  alt="GPLX 8"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/9.png"  alt="GPLX 9"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/10.png" alt="GPLX 10"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/11.png" alt="GPLX 11"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/12.png" alt="GPLX 12"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/13.png" alt="GPLX 13"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/14.png" alt="GPLX 14"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gplx/15.png" alt="GPLX 15"></div>
+    </div>
+  </div>
+
+  <!-- Nội dung -->
+  <div class="pa-body">
+    <div class="pa-title" onclick="openProjectModal()">
+      Driving License Training System
+    </div>
+
+  <p class="pa-desc" onclick="openProjectModal()">
+    Hệ thống quản lý đào tạo giấy phép lái xe (GPLX) xây dựng bằng ASP.NET Core MVC,
+    hỗ trợ quản lý học viên, khóa học, kỳ thi, thanh toán và báo cáo.
+  </p>
+
+  <div class="pa-meta">
+    Đồ án chuyên ngành · ASP.NET Core MVC · SQL Server · EF Core
+  </div>
+  </div>
+
+  <!-- Action -->
+  <div class="pa-action">
+    <a class="pa-btn"
+        href="https://github.com/ngoctrinh564/driving-license-training-system"
+        target="_blank" rel="noopener">
+      GitHub
+    </a>
+    <button class="pa-btn secondary" onclick="openProjectModal()">
+      Chi tiết
+    </button>
+  </div>
+
+  </div>
+</div>
+
+<div class="pa-wrap">
+  <div class="pa-card">
+
+  <!-- Ảnh chính -->
+  <div class="pa-main">
+    <img class="iw-zoom"
+          src="/images/project/gym/main.png"
+          alt="Hệ thống quản lý phòng Gym">
+  </div>
+
+  <!-- Slider ảnh phụ -->
+  <div class="pa-slider">
+    <div class="pa-track">
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/1.png"  alt="Gym 1"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/2.png"  alt="Gym 2"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/3.png"  alt="Gym 3"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/4.png"  alt="Gym 4"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/5.png"  alt="Gym 5"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/6.png"  alt="Gym 6"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/7.png"  alt="Gym 7"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/8.png"  alt="Gym 8"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/9.png"  alt="Gym 9"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/10.png" alt="Gym 10"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/11.png" alt="Gym 11"></div>
+      <div class="pa-thumb"><img class="iw-zoom" src="/images/project/gym/12.png" alt="Gym 12"></div>
+    </div>
+  </div>
+
+  <!-- Nội dung -->
+  <div class="pa-body">
+    <div class="pa-title" onclick="openGymModal()">
+      Hệ thống quản lý phòng Gym
+    </div>
+
+  <p class="pa-desc" onclick="openGymModal()">
+    Ứng dụng web quản lý phòng gym xây dựng bằng ASP.NET Core MVC, hỗ trợ quản lý
+    hội viên, gói tập, thanh toán, thông báo và chatbot tư vấn.
+  </p>
+
+  <div class="pa-meta">
+    Đồ án môn học · ASP.NET Core MVC · SQL Server · Thanh toán online
+  </div>
+  </div>
+
+  <!-- Action -->
+  <div class="pa-action">
+    <a class="pa-btn"
+        href="https://github.com/ngoctrinh564/courseproject-ltweb-gym"
+        target="_blank" rel="noopener">
+      GitHub
+    </a>
+    <button class="pa-btn secondary" onclick="openGymModal()">
+      Chi tiết
+    </button>
+  </div>
+
+  </div>
+</div>
 
 ---
 
@@ -183,13 +560,13 @@ description: "Các project đã thực hiện và các web demo thú vị"
 <!-- ===== Card 1 ===== -->
 <div class="iw-card">
   <div class="iw-main">
-    <img class="iw-zoom" src="/images/project/noel.png" alt="Hand Gesture Christmas Tree">
+    <img class="iw-zoom" src="/images/noel/noel.png" alt="Hand Gesture Christmas Tree">
   </div>
 
   <div class="iw-slider">
     <div class="iw-track">
-      <div class="iw-thumb"><img class="iw-zoom" src="/images/project/noel2.png"></div>
-      <div class="iw-thumb"><img class="iw-zoom" src="/images/project/noel3.png"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="/images/noel/noel2.png"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="/images/noel/noel3.png"></div>
     </div>
   </div>
 
@@ -206,15 +583,15 @@ description: "Các project đã thực hiện và các web demo thú vị"
 <!-- ===== Card 2 ===== -->
 <div class="iw-card">
   <div class="iw-main">
-    <img class="iw-zoom" src="/images/project/3d.png" alt="Hand Tracking Particle Shapes">
+    <img class="iw-zoom" src="/images/3d/3d.png" alt="Hand Tracking Particle Shapes">
   </div>
 
   <div class="iw-slider">
     <div class="iw-track">
-      <div class="iw-thumb"><img class="iw-zoom" src="/images/project/3d2.png"></div>
-      <div class="iw-thumb"><img class="iw-zoom" src="/images/project/3d3.png"></div>
-      <div class="iw-thumb"><img class="iw-zoom" src="/images/project/3d4.png"></div>
-      <div class="iw-thumb"><img class="iw-zoom" src="/images/project/3d5.png"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="/images/3d/3d2.png"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="/images/3d/3d3.png"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="/images/3d/3d4.png"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="/images/3d/3d5.png"></div>
     </div>
   </div>
 

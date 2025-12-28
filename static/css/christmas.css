@@ -37,7 +37,7 @@ body,
   right: 0;
   height: 80px;
 
-  background: url("/images/snow-top.png") repeat-x top;
+  background: url("/images/backgroundChristmas/snow-top.png") repeat-x top;
   background-size: auto 80px;
 
   pointer-events: none;
@@ -55,7 +55,7 @@ body,
 
   height: 220px;
 
-  background: url("/images/snow-under.png")
+  background: url("/images/backgroundChristmas/snow-under.png")
     repeat-x bottom;
   background-size: auto 220px;
 
@@ -72,7 +72,7 @@ body,
   width: 340px;
   height: 280px;
 
-  background: url("/images/christmas-trees.png")
+  background: url("/images/backgroundChristmas/christmas-trees.png")
     no-repeat bottom right;
   background-size: contain;
 
