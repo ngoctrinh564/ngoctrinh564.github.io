@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Project | Ngọc Trinh - Blog Lập Trình Mạng</title>
+<meta name="keywords" content="">
+<meta name="description" content="Các project đã thực hiện và các web demo thú vị">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/project/">
+<link crossorigin="anonymous" href="http://localhost:1313/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css" integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/project/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/project/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><link rel="stylesheet" href="http://localhost:1313/css/blog-layout.css">
+<link rel="stylesheet" href="http://localhost:1313/css/custom.css">
+<link rel="stylesheet" href="http://localhost:1313/css/christmas.css">
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Ngọc Trinh - Blog Lập Trình Mạng (Alt + H)">Ngọc Trinh - Blog Lập Trình Mạng</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/" title="Home">
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blog/" title="Blog">
+                    <span>Blog</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/project/" title="Project">
+                    <span class="active">Project</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/topics/" title="Topics">
+                    <span>Topics</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/roadmaps/" title="Roadmaps">
+                    <span>Roadmaps</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about/" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/contact/" title="Contact">
+                    <span>Contact</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+<header class="page-header">
+  <h1>
+    Project
+  </h1>
+  <div class="post-description">
+    Các project đã thực hiện và các web demo thú vị
+  </div>
+</header>
+
+
+
+  
+  
+
+  <aside style="
+    position:fixed;
+    right:28px;
+    top:120px;
+    width:320px;
+    z-index:60;
+    pointer-events:none;
+  ">
+    <div class="toc-card" style="
+      pointer-events:auto;
+      background:var(--entry);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:1.4rem 1.4rem 1.2rem;
+      box-shadow:0 18px 48px rgba(0,0,0,0.10);
+      font-size:0.86rem;
+      line-height:1.6;
+    ">
+
+      
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        font-weight:600;
+        font-size:0.9rem;
+        margin-bottom:12px;
+        padding-bottom:10px;
+        border-bottom:1px solid var(--border);
+      ">
+        <span>📑 Mục lục</span>
+
+        <button
+          aria-label="Toggle TOC"
+          onclick="
+            var toc = this.closest('.toc-card').querySelector('.toc-body');
+            if (toc.style.display === 'none') {
+              toc.style.display = '';
+              this.textContent = '−';
+            } else {
+              toc.style.display = 'none';
+              this.textContent = '+';
+            }
+          "
+          style="
+            background:none;
+            border:none;
+            cursor:pointer;
+            font-size:1.1rem;
+            font-weight:600;
+            color:var(--secondary);
+          "
+        >−</button>
+      </div>
+
+      
+      <div class="toc-body" style="max-height:calc(100vh - 260px); overflow-y:auto;">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#a-project">A. Project</a></li>
+    <li><a href="#b-interesting-web">B. Interesting Web</a></li>
+  </ul>
+</nav>
+      </div>
+
+    </div>
+  </aside>
+
+  <style>
+    #TableOfContents { font-size:0.86rem; }
+    #TableOfContents ul { list-style:none; margin:0; padding:0; }
+    #TableOfContents li { margin:6px 0; }
+
+    #TableOfContents a{
+      display:block;
+      padding:4px 8px;
+      border-radius:6px;
+      text-decoration:none;
+      color:var(--secondary);
+      transition:background .15s,color .15s;
+    }
+    #TableOfContents a:hover{
+      background:rgba(0,0,0,.04);
+      color:var(--primary);
+    }
+
+    #TableOfContents ul ul{
+      margin-top:4px;
+      padding-left:16px;
+      border-left:1px solid var(--border);
+    }
+    #TableOfContents ul ul a{ font-size:.84rem; padding-left:12px; }
+    #TableOfContents ul ul ul a{ font-size:.82rem; }
+  </style>
+
+  
+
+  
+  
+
+
+
+<div class="post-content"><h2 id="a-project">A. Project<a hidden class="anchor" aria-hidden="true" href="#a-project">#</a></h2>
+<p>(Chưa có dữ liệu)</p>
+<hr>
+<h2 id="b-interesting-web">B. Interesting Web<a hidden class="anchor" aria-hidden="true" href="#b-interesting-web">#</a></h2>
+<style>
+/* ===== Grid ===== */
+.iw-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:24px;
+  margin-top:24px;
+}
+@media (max-width:900px){
+  .iw-grid{ grid-template-columns:1fr; }
+}
+
+/* ===== Card ===== */
+.iw-card{
+  background:var(--entry);
+  border-radius:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.06);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+}
+
+/* ===== Main image (fixed ratio) ===== */
+.iw-main{
+  width:100%;
+  aspect-ratio:16 / 9;
+  overflow:hidden;
+  background:#000;
+}
+.iw-main img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  cursor:zoom-in;
+  display:block;
+}
+
+/* ===== Slider thumbnails ===== */
+.iw-slider{ padding:14px; }
+.iw-track{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+}
+.iw-track::-webkit-scrollbar{ height:6px; }
+.iw-track::-webkit-scrollbar-thumb{
+  background:rgba(0,0,0,.25);
+  border-radius:6px;
+}
+.iw-thumb{
+  flex:0 0 140px;
+  aspect-ratio:16 / 9;
+  scroll-snap-align:start;
+  border-radius:10px;
+  overflow:hidden;
+  background:#000;
+}
+.iw-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  cursor:zoom-in;
+  display:block;
+}
+
+/* ===== Content ===== */
+.iw-body{
+  padding:16px;
+  flex:1;
+}
+.iw-title{
+  font-weight:700;
+  margin:0 0 6px 0;
+}
+.iw-desc{
+  margin:0;
+  font-size:.95rem;
+  color:var(--secondary);
+  line-height:1.5;
+}
+
+/* ===== Action ===== */
+.iw-action{
+  padding:16px;
+  border-top:1px solid rgba(0,0,0,.06);
+  display:flex;
+  justify-content:flex-end;
+}
+.iw-btn{
+  padding:10px 18px;
+  border-radius:12px;
+  background:var(--primary);
+  color:#fff;
+  font-size:.9rem;
+  text-decoration:none;
+}
+.iw-btn:hover{ opacity:.85; }
+
+/* ===== Lightbox ===== */
+.iw-lightbox{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+.iw-lightbox.open{ display:flex; }
+.iw-lightbox img{
+  max-width:94vw;
+  max-height:92vh;
+  border-radius:12px;
+  cursor:zoom-out;
+}
+.iw-close{
+  position:absolute;
+  top:16px;
+  right:16px;
+  width:40px;
+  height:40px;
+  border-radius:10px;
+  border:0;
+  background:rgba(255,255,255,.15);
+  color:#fff;
+  font-size:18px;
+  cursor:pointer;
+}
+</style>
+<!-- Lightbox -->
+<div class="iw-lightbox" id="iw-lightbox">
+  <button class="iw-close" id="iw-close">✕</button>
+  <img id="iw-lightbox-img" alt="">
+</div>
+<script>
+(function(){
+  const lb = document.getElementById("iw-lightbox");
+  const imgBox = document.getElementById("iw-lightbox-img");
+  const closeBtn = document.getElementById("iw-close");
+
+  document.addEventListener("click", e => {
+    const img = e.target.closest(".iw-zoom");
+    if(img){
+      imgBox.src = img.src;
+      lb.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+    if(e.target === lb || e.target === closeBtn){
+      lb.classList.remove("open");
+      imgBox.src = "";
+      document.body.style.overflow = "";
+    }
+  });
+
+  document.addEventListener("keydown", e => {
+    if(e.key === "Escape"){
+      lb.classList.remove("open");
+      imgBox.src = "";
+      document.body.style.overflow = "";
+    }
+  });
+})();
+</script>
+<div class="iw-grid">
+<!-- ===== Card 1 ===== -->
+<div class="iw-card">
+  <div class="iw-main">
+    <img class="iw-zoom" src="http://localhost:1313/images/project/noel.png" alt="Hand Gesture Christmas Tree">
+  </div>
+  <div class="iw-slider">
+    <div class="iw-track">
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/project/noel2.png"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/project/noel3.png"></div>
+    </div>
+  </div>
+  <div class="iw-body">
+    <div class="iw-title">Hand Gesture Christmas Tree</div>
+    <p class="iw-desc">Tương tác cây thông 3D bằng cử chỉ tay thông qua webcam theo thời gian thực.</p>
+  </div>
+  <div class="iw-action">
+    <a class="iw-btn" href="http://localhost:1313/camera/noel.html" target="_blank">Open Demo</a>
+  </div>
+</div>
+<!-- ===== Card 2 ===== -->
+<div class="iw-card">
+  <div class="iw-main">
+    <img class="iw-zoom" src="http://localhost:1313/images/project/3d.png" alt="Hand Tracking Particle Shapes">
+  </div>
+  <div class="iw-slider">
+    <div class="iw-track">
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/project/3d2.png"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/project/3d3.png"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/project/3d4.png"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/project/3d5.png"></div>
+    </div>
+  </div>
+  <div class="iw-body">
+    <div class="iw-title">Hand Tracking Particle Shapes</div>
+    <p class="iw-desc">Tạo và chuyển đổi hình khối particle 3D bằng cử chỉ tay qua webcam theo thời gian thực.</p>
+  </div>
+  <div class="iw-action">
+    <a class="iw-btn" href="http://localhost:1313/camera/" target="_blank">Open Demo</a>
+  </div>
+</div>
+<!-- ===== Card 3 ===== -->
+<div class="iw-card">
+  <div class="iw-main">
+    <img class="iw-zoom" src="http://localhost:1313/images/Hfirework/main.png" alt="Interactive Fireworks Simulation">
+  </div>
+  <div class="iw-slider">
+    <div class="iw-track">
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/Hfirework/1.png" alt="Preview 1"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/Hfirework/2.png" alt="Preview 2"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/Hfirework/3.png" alt="Preview 3"></div>
+    </div>
+  </div>
+  <div class="iw-body">
+    <div class="iw-title">Interactive Fireworks Simulation</div>
+    <p class="iw-desc">Mô phỏng pháo hoa thời gian thực với hệ particle, cho phép tùy chỉnh và kích hoạt hiệu ứng trực tiếp trên trình duyệt.</p>
+  </div>
+  <div class="iw-action">
+    <a class="iw-btn" href="http://localhost:1313/Hfirework/" target="_blank" rel="noopener">Open Demo</a>
+  </div>
+</div>
+<!-- ===== Card 4 ===== -->
+<div class="iw-card">
+  <div class="iw-main">
+    <img class="iw-zoom" src="http://localhost:1313/images/CountdownNY/main.png" alt="New Year Countdown Timer">
+  </div>
+  <div class="iw-slider">
+    <div class="iw-track">
+      <div class="iw-thumb">
+        <img class="iw-zoom" src="http://localhost:1313/images/CountdownNY/1.png" alt="Preview 1">
+      </div>
+    </div>
+  </div>
+  <div class="iw-body">
+    <div class="iw-title">New Year Countdown Timer</div>
+    <p class="iw-desc">
+      Đồng hồ đếm ngược thời gian đến năm mới với giao diện động và hiệu ứng nền lễ hội.
+    </p>
+  </div>
+  <div class="iw-action">
+    <a class="iw-btn" href="http://localhost:1313/CountdownNY/" target="_blank" rel="noopener">
+      Open Demo
+    </a>
+  </div>
+</div>
+<!-- ===== Card 5 ===== -->
+<div class="iw-card">
+  <div class="iw-main">
+    <img class="iw-zoom" src="http://localhost:1313/images/NewYear/main.png" alt="Animated Holiday Greeting Scene">
+  </div>
+  <div class="iw-slider">
+    <div class="iw-track">
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/NewYear/1.png" alt="Preview 1"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/NewYear/2.png" alt="Preview 2"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/NewYear/3.png" alt="Preview 3"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/NewYear/4.png" alt="Preview 4"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/NewYear/5.png" alt="Preview 5"></div>
+      <div class="iw-thumb"><img class="iw-zoom" src="http://localhost:1313/images/NewYear/6.png" alt="Preview 6"></div>
+    </div>
+  </div>
+  <div class="iw-body">
+    <div class="iw-title">Animated Holiday Greeting Scene</div>
+    <p class="iw-desc">Cảnh chúc mừng năm mới dạng hoạt họa 2D với hiệu ứng tuyết rơi, nhân vật và tương tác đếm ngược.</p>
+  </div>
+  <div class="iw-action">
+    <a class="iw-btn" href="http://localhost:1313/NewYear/" target="_blank" rel="noopener">Open Demo</a>
+  </div>
+</div>
+</div>
+
+
+</div>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Ngọc Trinh - Blog Lập Trình Mạng</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+<script src="http://localhost:1313/js/particle-bg.js"></script>
+
+
+<div class="christmas-tree"></div>
+
+
+<script src="http://localhost:1313/js/christmas-bg.js" defer></script>
+
+
+<script>
+(function () {
+  function mountChristmasToggle() {
+    const themeBtn = document.getElementById("theme-toggle");
+    if (!themeBtn) return;
+
+     
+    if (document.getElementById("christmas-toggle")) return;
+
+    const btn = document.createElement("button");
+    btn.id = "christmas-toggle";
+    btn.type = "button";
+    btn.setAttribute("aria-label", "Christmas mode");
+    btn.title = "Christmas mode";
+
+     
+    btn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="18" height="18"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="2"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           aria-hidden="true">
+        <path d="M12 2 8.5 8h7L12 2Z"/>
+        <path d="M12 6 6 14h12L12 6Z"/>
+        <path d="M12 10 4 20h16L12 10Z"/>
+        <path d="M12 20v2"/>
+      </svg>
+    `;
+
+     
+    btn.className = themeBtn.className;     
+    btn.style.marginLeft = "6px";
+    btn.style.padding = "0";
+    btn.style.background = "transparent";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.display = "inline-flex";
+    btn.style.alignItems = "center";
+    btn.style.justifyContent = "center";
+    btn.style.color = "inherit";             
+
+     
+    themeBtn.insertAdjacentElement("afterend", btn);
+
+     
+    if (localStorage.getItem("christmas") === "true") {
+      document.documentElement.classList.add("christmas");
+    }
+
+     
+    btn.addEventListener("click", () => {
+      const enabled = document.documentElement.classList.toggle("christmas");
+      localStorage.setItem("christmas", enabled ? "true" : "false");
+    });
+  }
+
+   
+  const obs = new MutationObserver(() => {
+    if (document.getElementById("theme-toggle")) {
+      mountChristmasToggle();
+      obs.disconnect();
+    }
+  });
+
+  obs.observe(document.body, { childList: true, subtree: true });
+})();
+</script>
+
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

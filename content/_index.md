@@ -51,42 +51,6 @@ description: "Sinh viên Hệ thống thông tin · Lập trình mạng · Real-
       phân tích kiến trúc, luồng dữ liệu, mô hình giao tiếp và lý do thiết kế trong các bài toán thực tế.
     </p>
 
-    <!-- DEMO LINKS (single underline via bottom border) -->
-    <div style="
-      display:flex;
-      flex-wrap:wrap;
-      gap:18px 26px;
-      align-items:center;
-      font-size:0.95rem;
-      margin:6px 0 18px 0;
-    ">
-
-      <a href="/camera/"
-        style="
-          text-decoration:none;
-          color:inherit;
-          font-weight:500;
-          white-space:nowrap;
-          padding-bottom:2px;
-          border-bottom:1px solid rgba(0,0,0,0.55);
-        ">
-        🎥 Demo Camera (Hình khối)
-      </a>
-
-      <a href="/camera/noel.html"
-        style="
-          text-decoration:none;
-          color:inherit;
-          font-weight:500;
-          white-space:nowrap;
-          padding-bottom:2px;
-          border-bottom:1px solid rgba(0,0,0,0.55);
-        ">
-        🎄 Demo Camera (Noel)
-      </a>
-
-    </div>
-
     <!-- SOCIAL LINKS -->
     <div style="
       display:flex;

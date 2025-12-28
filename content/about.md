@@ -159,6 +159,30 @@ Blog **không phù hợp** nếu bạn chỉ tìm:
 
 ---
 
+## Những mảnh ghép khác
+
+Mình tin rằng tư duy của một kỹ sư không chỉ được hình thành từ những dòng code, mà còn từ những trải nghiệm sống đa dạng. Ngoài thời gian với Terminal, mình còn là:
+
+### CTV Viện Hợp tác Phát triển Đào tạo HUTECH 
+Môi trường làm việc chuyên nghiệp tại Viện giúp mình rèn luyện kỹ năng giao tiếp và tổ chức công việc. Mình học được cách hỗ trợ sinh viên, xử lý quy trình hành chính chính xác và giữ thái độ chuyên nghiệp trong mọi tình huống – những tố chất cần thiết để làm việc với khách hàng/đối tác sau này.
+
+### Staff hỗ trợ giải Marathon
+Công việc hậu cần giúp mình rèn luyện *Service Mindset* (tư duy dịch vụ). Đảm bảo đường chạy suôn sẻ cho vận động viên tương tự như cách vận hành hệ thống mạng: cần sự thầm lặng, chính xác và trách nhiệm cao.
+
+<div style="display:flex; gap:16px; margin-top:16px;">
+  <img src="/images/about/staff1.jpg" alt="Marathon Staff 1" style="width:50%; border-radius:10px;">
+  <img src="/images/about/staff2.jpg" alt="Marathon Staff 2" style="width:50%; border-radius:10px;">
+</div>
+
+### Diễn viên quần chúng (Extras Actor)
+Những ngày làm việc trên phim trường rèn luyện sự kiên nhẫn và kỷ luật. Dù chỉ là một mắt xích nhỏ trong một hệ thống lớn, mức độ tập trung và tuân thủ quy trình vẫn ảnh hưởng trực tiếp đến kết quả chung.
+
+<div style="margin-top:16px;">
+  <img src="/images/about/Extras.jpg" alt="Extras Actor" style="width:100%; max-width:600px; border-radius:10px;">
+</div>
+
+---
+
 ## Liên hệ
 
 - **Email**: nn.trinh.insys@gmail.com  

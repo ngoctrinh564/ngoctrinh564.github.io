@@ -42,25 +42,31 @@ canonifyURLs = true
     weight = 2
 
   [[menu.main]]
+    identifier = "project"
+    name = "Project"
+    url = "/project/"
+    weight = 3
+
+  [[menu.main]]
     identifier = "topics"
     name = "Topics"
     url = "/topics/"
-    weight = 3
+    weight = 4
 
   [[menu.main]]
     identifier = "roadmaps"
     name = "Roadmaps"
     url = "/roadmaps/"
-    weight = 4
+    weight = 5
 
   [[menu.main]]
     identifier = "about"
     name = "About"
     url = "/about/"
-    weight = 5
+    weight = 6
 
   [[menu.main]]
     identifier = "contact"
     name = "Contact"
     url = "/contact/"
-    weight = 6
+    weight = 7

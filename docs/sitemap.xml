@@ -149,6 +149,8 @@
   </url><url>
     <loc>http://localhost:1313/categories/practice/</loc>
   </url><url>
+    <loc>http://localhost:1313/project/</loc>
+  </url><url>
     <loc>http://localhost:1313/languages/python/</loc>
   </url><url>
     <loc>http://localhost:1313/tags/python/</loc>
